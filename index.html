@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Contagem Certa</title>
+  <title>Conta Certa - Offline First</title>
   <link rel="manifest" href="./manifest.json">
   <style>
     :root {
       --bg: #0f172a;
       --card: #1e293b;
+      --card-light: #263349;
       --border: #334155;
       --text: #f8fafc;
       --muted: #94a3b8;
@@ -18,117 +19,175 @@
       --blue: #3b82f6;
     }
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { margin: 0; background: var(--bg); color: var(--text); padding: 16px; display: flex; flex-direction: column; min-height: 100vh; }
-    
-    .top-bar { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
-    .badge-rede { padding: 8px 14px; border-radius: 6px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    body { margin: 0; background: var(--bg); color: var(--text); padding: 12px; display: flex; flex-direction: column; min-height: 100vh; gap: 12px; }
+
+    /* Cabeçalho estilo painel industrial */
+    .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+    .brand { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .brand-title { font-weight: 900; font-size: 18px; color: var(--green); letter-spacing: 0.5px; }
+    .op-banner { font-size: 15px; font-weight: 700; color: var(--text); background: var(--bg); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); }
+    .status-group { display: flex; align-items: center; gap: 8px; }
+    .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
     .online { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid var(--green); }
     .offline { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid var(--red); }
+    .queue-badge { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid var(--amber); }
 
-    .config-inline { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-    .config-inline input, .config-inline select { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 6px; font-size: 14px; }
+    /* Painel de Configuração da OP / Turno */
+    .setup-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; background: var(--card); padding: 10px; border-radius: 10px; border: 1px solid var(--border); }
+    .field-group { display: flex; flex-direction: column; gap: 4px; }
+    .field-group label { font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+    .field-group input, .field-group select { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 8px 10px; border-radius: 6px; font-size: 14px; font-weight: 600; }
 
-    .scanner-box { background: var(--card); border: 2px solid var(--blue); border-radius: 12px; padding: 20px; margin-bottom: 16px; text-align: center; }
-    .scanner-box.erro { border-color: var(--red); background: rgba(239, 68, 68, 0.12); }
-    .scanner-box.sucesso { border-color: var(--green); background: rgba(16, 185, 129, 0.12); }
-    
-    #campoQR { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-size: 24px; padding: 14px; border-radius: 8px; text-align: center; outline: none; margin-top: 8px; }
-    #feedbackMsg { margin-top: 10px; font-size: 16px; font-weight: 600; min-height: 24px; color: var(--muted); }
+    /* Grid Principal: Contagem vs Informações */
+    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 680px) { .main-grid { grid-template-columns: 1fr; } }
 
-    .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 16px; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
-    .card-label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .card-val { font-size: 42px; font-weight: 800; margin-top: 6px; }
-    .val-pendente { color: var(--amber); }
-    .val-sync { color: var(--green); }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: center; }
+    .contagem-display { text-align: center; }
+    .contagem-label { font-size: 15px; color: var(--muted); font-weight: 700; }
+    .contagem-numero { font-size: 64px; font-weight: 900; line-height: 1.05; margin: 4px 0; color: var(--text); }
+    .contagem-meta { font-size: 22px; font-weight: 700; color: var(--muted); border-top: 2px solid var(--border); display: inline-block; padding: 4px 24px 0; }
 
-    .acoes { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-    button { background: var(--blue); color: white; border: none; padding: 12px 18px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    button.sec { background: var(--card); border: 1px solid var(--border); color: var(--text); }
-    button.test { background: #6366f1; }
+    .info-box { text-align: center; }
+    .info-box h3 { margin: 0 0 10px 0; font-size: 16px; color: var(--muted); }
+    .info-line { font-size: 18px; font-weight: 800; margin: 4px 0; letter-spacing: 0.4px; }
+    .info-line span { color: var(--blue); }
 
-    .historico { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; flex: 1; overflow-y: auto; max-height: 240px; }
-    .historico h3 { margin: 0 0 10px 0; font-size: 14px; color: var(--muted); }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
-    .tag-pend { color: var(--amber); font-weight: 600; }
-    .tag-ok { color: var(--green); font-weight: 600; }
+    /* Área Inferior: Instruções + Produtos Escaneados */
+    .bottom-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 12px; flex: 1; }
+    @media (max-width: 680px) { .bottom-grid { grid-template-columns: 1fr; } }
+
+    .instrucoes { font-size: 14px; line-height: 1.6; color: var(--muted); }
+    .instrucoes strong { color: var(--text); }
+    .tag-cmd { padding: 2px 6px; border-radius: 4px; font-weight: 800; font-size: 12px; }
+    .cmd-start { background: rgba(16, 185, 129, 0.25); color: #34d399; }
+    .cmd-stop { background: rgba(239, 68, 68, 0.25); color: #f87171; }
+
+    .scanner-status { margin-top: 14px; padding: 12px; border-radius: 8px; font-weight: 800; font-size: 15px; text-align: center; border: 2px solid var(--green); background: rgba(16, 185, 129, 0.12); color: #34d399; }
+    .scanner-status.pausado { border-color: var(--amber); background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .scanner-status.erro { border-color: var(--red); background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+    #campoQR { width: 100%; margin-top: 10px; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; font-size: 16px; text-align: center; outline: none; }
+
+    /* Lista de Produtos Escaneados */
+    .lista-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .lista-header h3 { margin: 0; font-size: 15px; color: var(--muted); }
+    .lista-scroll { overflow-y: auto; max-height: 220px; display: flex; flex-direction: column; gap: 6px; }
+    .item-bip { display: flex; justify-content: space-between; align-items: center; background: var(--bg); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; font-size: 13px; }
+    .item-bip strong { color: var(--text); font-size: 14px; }
+    .item-meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .btn-del { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 6px; padding: 6px 10px; cursor: pointer; font-weight: 700; }
+
+    /* Barra de Ações */
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    button.act { background: var(--blue); color: white; border: none; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    button.act.sec { background: var(--card); border: 1px solid var(--border); color: var(--text); }
+    button.act.test { background: #6366f1; }
   </style>
 </head>
 <body>
 
-  <div class="top-bar">
-    <div id="statusRede" class="badge-rede online">● ONLINE</div>
-    <div class="config-inline">
-      <input type="text" id="cfgPosto" placeholder="Posto / Máquina (ex: INJ-03)" onchange="salvarConfig()">
-      <input type="text" id="cfgOperador" placeholder="Matrícula / Operador" onchange="salvarConfig()">
-      <select id="cfgModo" onchange="salvarConfig()">
-        <option value="unico">Etiqueta Única (Bloqueia Repetida)</option>
-        <option value="lote">Etiqueta de Lote (Debounce 1.5s)</option>
-      </select>
+  <!-- 1. Cabeçalho OP / Nome / Status -->
+  <div class="header">
+    <div class="brand">
+      <div class="brand-title">CONTA CERTA</div>
+      <div class="op-banner" id="bannerOP">OP: 348274 | Nome: CAPA CORRENTE - K62J</div>
+    </div>
+    <div class="status-group">
+      <span class="badge queue-badge" id="badgeFila">Fila Local: 0</span>
+      <span class="badge online" id="statusRede">● Conectado ao sistema</span>
     </div>
   </div>
 
-  <div id="scannerContainer" class="scanner-box">
-    <div style="font-size: 14px; color: var(--muted);">PRONTO PARA LEITURA DO QR CODE</div>
-    <!-- inputmode="none" impede o teclado virtual do Android de cobrir a tela -->
-    <input type="text" id="campoQR" inputmode="none" autocomplete="off" autofocus placeholder="Aguardando bip...">
-    <div id="feedbackMsg">Aponte o leitor para a etiqueta</div>
+  <!-- 2. Parâmetros da Ordem de Produção -->
+  <div class="setup-bar">
+    <div class="field-group">
+      <label>Ordem de Produção (OP)</label>
+      <input type="text" id="cfgOP" value="348274" oninput="salvarConfig()">
+    </div>
+    <div class="field-group">
+      <label>Nome / Descrição da Peça</label>
+      <input type="text" id="cfgPeca" value="CAPA CORRENTE - K62J" oninput="salvarConfig()">
+    </div>
+    <div class="field-group">
+      <label>Qtd. por Embalagem</label>
+      <input type="number" id="cfgMeta" value="100" min="1" oninput="salvarConfig()">
+    </div>
+    <div class="field-group">
+      <label>Embalagem Atual</label>
+      <input type="number" id="cfgEmbalagem" value="1" min="1" oninput="salvarConfig()">
+    </div>
+    <div class="field-group">
+      <label>Operador (Matrícula)</label>
+      <input type="text" id="cfgOperador" value="31618" oninput="salvarConfig()">
+    </div>
   </div>
 
-  <div class="grid-cards">
-    <div class="card">
-      <div class="card-label">Total Lido no Turno</div>
-      <div id="cntTotal" class="card-val">0</div>
+  <!-- 3. Painel Contagem & Informações -->
+  <div class="main-grid">
+    <div class="panel contagem-display">
+      <div class="contagem-label">Contagem</div>
+      <div class="contagem-numero" id="displayContagem">0</div>
+      <div><span class="contagem-meta" id="displayMeta">/100</span></div>
     </div>
-    <div class="card">
-      <div class="card-label">Fila Local (Pendentes)</div>
-      <div id="cntPendentes" class="card-val val-pendente">0</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Enviados à Planilha</div>
-      <div id="cntSincronizados" class="card-val val-sync">0</div>
+
+    <div class="panel info-box">
+      <h3>Informações</h3>
+      <div class="info-line">CONTAGEM ATUAL: <span id="infoContagem">0</span></div>
+      <div class="info-line">EMBALAGEM: <span id="infoEmbalagem">1</span></div>
+      <div class="info-line">OPERADOR: <span id="infoOperador">31618</span></div>
     </div>
   </div>
 
-  <div class="acoes">
-    <button id="btnSync" onclick="sincronizarLote()">Sincronizar Agora</button>
-    <button class="test" onclick="simularLeituraTeste()">Simular Bip (Teste Celular)</button>
-    <button class="sec" onclick="exportarCSV()">Baixar Backup CSV</button>
-    <button class="sec" onclick="limparTurno()">Zerar Turno</button>
+  <!-- 4. Instruções / Leitor e Produtos Escaneados -->
+  <div class="bottom-grid">
+    <div class="panel">
+      <div class="instrucoes">
+        <strong>Instruções:</strong><br>
+        • Para iniciar nova embalagem, leia o QR Code <span class="tag-cmd cmd-start">START</span><br>
+        • Para parar a contagem, leia o QR Code <span class="tag-cmd cmd-stop">STOP</span><br>
+        • Aproxime o QR Code do produto para registrar
+      </div>
+
+      <div id="statusLeitor" class="scanner-status">Leitor ativo - escaneie os produtos</div>
+      <input type="text" id="campoQR" inputmode="none" autocomplete="off" autofocus placeholder="Aguardando leitura QR (Produto, START ou STOP)...">
+    </div>
+
+    <div class="panel" style="justify-content: flex-start;">
+      <div class="lista-header">
+        <h3>Produtos Escaneados (Embalagem Atual)</h3>
+        <span style="font-size: 12px; color: var(--muted);" id="totalGeralTurno">Total Geral: 0</span>
+      </div>
+      <div class="lista-scroll" id="listaProdutos"></div>
+    </div>
   </div>
 
-  <div class="historico">
-    <h3>ÚLTIMAS 10 LEITURAS</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Hora</th>
-          <th>Código QR</th>
-          <th>Posto</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody id="tabelaRecentes"></tbody>
-    </table>
+  <!-- 5. Controles Operacionais -->
+  <div class="actions">
+    <button class="act" id="btnSync" onclick="sincronizarLote()">Sincronizar Agora</button>
+    <button class="act sec" onclick="novaEmbalagemManual()">+ Nova Embalagem (START)</button>
+    <button class="act sec" onclick="alternarPausa()">Pausar / Retomar (STOP)</button>
+    <button class="act test" onclick="simularBip()">Simular Bip (Teste)</button>
+    <button class="act sec" onclick="exportarCSV()">Backup CSV</button>
+    <button class="act sec" onclick="limparTurno()">Zerar Turno</button>
   </div>
 
   <script>
     // ==========================================
-    // CONFIGURAÇÃO PRINCIPAL
+    // CONFIGURAÇÃO DO ENDPOINT
     // ==========================================
-    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzRCqedMO3e2uTUgY0M0FrrrHgh3N7OV6r4ESnWYql7gETBdfguPMu7KQTxEuHMcKuN/exec";
-    const INTERVALO_SYNC_MS = 60000; // Sincroniza a cada 60 segundos
-    const TAMANHO_LOTE = 100;        // Envia até 100 registros por pacote
+    const URL_APPS_SCRIPT = "COLE_AQUI_SUA_URL_DO_APPS_SCRIPT";
+    const INTERVALO_SYNC_MS = 60000;
+    const TAMANHO_LOTE = 100;
 
     let db;
     let sincronizando = false;
+    let leitorAtivo = true;
     let ultimoCodigo = "";
     let ultimoTimestamp = 0;
 
     // ==========================================
-    // 1. SINTETIZADOR DE ÁUDIO (WEB AUDIO API)
+    // SINTETIZADOR DE ÁUDIO (WEB AUDIO API)
     // ==========================================
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function tocarSom(tipo) {
@@ -140,13 +199,19 @@
 
       if (tipo === "ok") {
         osc.type = "sine";
-        osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(1250, audioCtx.currentTime);
         gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.12);
+        osc.stop(audioCtx.currentTime + 0.11);
+      } else if (tipo === "cmd") {
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.22);
       } else {
         osc.type = "sawtooth";
-        osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(210, audioCtx.currentTime);
         gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
         osc.start();
         osc.stop(audioCtx.currentTime + 0.35);
@@ -154,64 +219,50 @@
     }
 
     // ==========================================
-    // 2. BANCO DE DADOS LOCAL (INDEXEDDB)
+    // BANCO DE DADOS LOCAL (INDEXEDDB)
     // ==========================================
     function iniciarDB() {
       return new Promise((resolve, reject) => {
-        const req = indexedDB.open("ContagemCertaDB", 1);
+        const req = indexedDB.open("ContagemCertaV2", 1);
         req.onupgradeneeded = (e) => {
           const database = e.target.result;
-          const store = database.createObjectStore("leituras", { keyPath: "id" });
-          store.createIndex("status", "status", { unique: false });
-          store.createIndex("codigoQR", "codigoQR", { unique: false });
+          database.createObjectStore("leituras", { keyPath: "id" });
+          database.createObjectStore("excluidos", { keyPath: "id" });
         };
         req.onsuccess = (e) => { db = e.target.result; resolve(db); };
         req.onerror = (e) => reject(e);
       });
     }
 
-    function adicionarLeituraDB(registro) {
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(["leituras"], "readwrite");
-        const store = tx.objectStore("leituras");
-        const req = store.add(registro);
-        req.onsuccess = () => resolve(true);
-        req.onerror = (e) => reject(e);
-      });
-    }
-
-    function obterTodasLeituras() {
+    function dbGetAll(storeName) {
       return new Promise((resolve) => {
-        const tx = db.transaction(["leituras"], "readonly");
-        const req = tx.objectStore("leituras").getAll();
+        const tx = db.transaction([storeName], "readonly");
+        const req = tx.objectStore(storeName).getAll();
         req.onsuccess = () => resolve(req.result || []);
       });
     }
 
-    function marcarComoSincronizados(ids) {
+    function dbPut(storeName, item) {
       return new Promise((resolve) => {
-        const tx = db.transaction(["leituras"], "readwrite");
-        const store = tx.objectStore("leituras");
-        ids.forEach(id => {
-          const getReq = store.get(id);
-          getReq.onsuccess = () => {
-            const item = getReq.result;
-            if (item) {
-              item.status = "sincronizado";
-              store.put(item);
-            }
-          };
-        });
+        const tx = db.transaction([storeName], "readwrite");
+        tx.objectStore(storeName).put(item);
+        tx.oncomplete = () => resolve();
+      });
+    }
+
+    function dbDelete(storeName, id) {
+      return new Promise((resolve) => {
+        const tx = db.transaction([storeName], "readwrite");
+        tx.objectStore(storeName).delete(id);
         tx.oncomplete = () => resolve();
       });
     }
 
     // ==========================================
-    // 3. CAPTURA E VALIDAÇÃO DE LEITURA
+    // LÓGICA DE LEITURA (PRODUTO, START E STOP)
     // ==========================================
     const campoQR = document.getElementById("campoQR");
 
-    // Mantém o foco no campo do leitor sem roubar cliques dos inputs de configuração
     document.addEventListener("click", (e) => {
       if (!["INPUT", "SELECT", "BUTTON"].includes(e.target.tagName)) {
         campoQR.focus();
@@ -223,187 +274,296 @@
         e.preventDefault();
         const codigo = campoQR.value.trim();
         campoQR.value = "";
-        if (codigo) await processarCodigo(codigo);
+        if (codigo) await processarLeitura(codigo);
       }
     });
 
-    async function processarCodigo(codigo) {
-      const modo = document.getElementById("cfgModo").value;
-      const posto = document.getElementById("cfgPosto").value.trim() || "POSTO-PADRAO";
-      const operador = document.getElementById("cfgOperador").value.trim() || "NAO-INFORMADO";
+    async function processarLeitura(codigoRaw) {
+      const cmd = codigoRaw.toUpperCase();
+
+      // Comando QR: STOP
+      if (cmd === "STOP") {
+        leitorAtivo = false;
+        tocarSom("cmd");
+        atualizarStatusLeitor("Leitor pausado (QR STOP lido) — Leia START para retomar", "pausado");
+        return;
+      }
+
+      // Comando QR: START (retoma ou avança embalagem se a atual já tiver peças)
+      if (cmd === "START") {
+        if (!leitorAtivo) {
+          leitorAtivo = true;
+          tocarSom("cmd");
+          atualizarStatusLeitor("Leitor ativo - escaneie os produtos", "");
+        } else {
+          await novaEmbalagemManual();
+        }
+        return;
+      }
+
+      // Bloqueia se o leitor estiver em STOP
+      if (!leitorAtivo) {
+        tocarSom("erro");
+        atualizarStatusLeitor("BLOQUEADO! Leitor em STOP — Leia o QR START primeiro", "erro");
+        return;
+      }
+
       const agora = Date.now();
-
-      // Debounce de 1.5s para evitar leitura tremida
-      if (codigo === ultimoCodigo && (agora - ultimoTimestamp) < 1500) {
-        mostrarFeedback(`Bloqueado (leitura dupla rápida): ${codigo}`, "erro");
+      if (codigoRaw === ultimoCodigo && (agora - ultimoTimestamp) < 1200) {
         tocarSom("erro");
+        atualizarStatusLeitor(`Leitura dupla bloqueada: ${codigoRaw}`, "erro");
         return;
       }
 
-      const todas = await obterTodasLeituras();
-
-      // Se modo "Etiqueta Única", impede bipar o mesmo QR Code duas vezes no turno
-      if (modo === "unico" && todas.some(item => item.codigoQR === codigo)) {
-        mostrarFeedback(`DUPLICADO! Peça já bipada neste turno: ${codigo}`, "erro");
+      const todas = await dbGetAll("leituras");
+      if (todas.some(item => item.codigoQR === codigoRaw)) {
         tocarSom("erro");
+        atualizarStatusLeitor(`DUPLICADO! Etiqueta já registrada: ${codigoRaw}`, "erro");
         return;
       }
 
-      ultimoCodigo = codigo;
+      const op = document.getElementById("cfgOP").value.trim() || "SEM-OP";
+      const nomePeca = document.getElementById("cfgPeca").value.trim() || "PECA";
+      const meta = parseInt(document.getElementById("cfgMeta").value, 10) || 100;
+      let embalagem = parseInt(document.getElementById("cfgEmbalagem").value, 10) || 1;
+      const operador = document.getElementById("cfgOperador").value.trim() || "00000";
+
+      // Verifica se a embalagem atual já atingiu a meta (ex: 100/100)
+      const qtdNaEmbalagem = todas.filter(i => String(i.embalagem) === String(embalagem) && i.op === op).length;
+      if (qtdNaEmbalagem >= meta) {
+        tocarSom("erro");
+        atualizarStatusLeitor(`EMBALAGEM ${embalagem} COMPLETA (${meta}/${meta})! Leia START para abrir a próxima.`, "pausado");
+        return;
+      }
+
+      ultimoCodigo = codigoRaw;
       ultimoTimestamp = agora;
 
       const registro = {
-        id: `${posto}-${agora}-${Math.random().toString(36).substring(2, 6)}`,
+        id: `${op}-E${embalagem}-${agora}-${Math.random().toString(36).substring(2, 5)}`,
         timestamp: agora,
         dataHora: new Date().toLocaleString("pt-BR"),
-        codigoQR: codigo,
-        posto: posto,
+        op: op,
+        nomePeca: nomePeca,
+        embalagem: embalagem,
+        codigoQR: codigoRaw,
         operador: operador,
         status: "pendente"
       };
 
-      await adicionarLeituraDB(registro);
+      await dbPut("leituras", registro);
       tocarSom("ok");
-      mostrarFeedback(`Registrado: ${codigo}`, "sucesso");
-      atualizarInterface();
+
+      if (qtdNaEmbalagem + 1 === meta) {
+        atualizarStatusLeitor(`Embalagem ${embalagem} concluída (${meta}/${meta})! Leia START para nova embalagem.`, "pausado");
+      } else {
+        atualizarStatusLeitor("Leitor ativo - escaneie os produtos", "");
+      }
+
+      await atualizarTela();
     }
 
-    function mostrarFeedback(texto, tipo) {
-      const box = document.getElementById("scannerContainer");
-      const msg = document.getElementById("feedbackMsg");
-      msg.textContent = texto;
-      box.className = `scanner-box ${tipo}`;
-      setTimeout(() => { box.className = "scanner-box"; }, 900);
+    async function excluirLeitura(id) {
+      if (!confirm("Remover esta leitura da contagem?")) return;
+      await dbDelete("leituras", id);
+      await dbPut("excluidos", { id: id });
+      tocarSom("cmd");
+      await atualizarTela();
+    }
+
+    async function novaEmbalagemManual() {
+      const todas = await dbGetAll("leituras");
+      const op = document.getElementById("cfgOP").value.trim();
+      const embAtual = parseInt(document.getElementById("cfgEmbalagem").value, 10) || 1;
+      const qtdAtual = todas.filter(i => String(i.embalagem) === String(embAtual) && i.op === op).length;
+
+      if (qtdAtual === 0) {
+        leitorAtivo = true;
+        atualizarStatusLeitor("Leitor ativo - escaneie os produtos", "");
+        return;
+      }
+
+      document.getElementById("cfgEmbalagem").value = embAtual + 1;
+      leitorAtivo = true;
+      salvarConfig();
+      tocarSom("cmd");
+      atualizarStatusLeitor(`Nova Embalagem ${embAtual + 1} iniciada — escaneie os produtos`, "");
+      await atualizarTela();
+    }
+
+    function alternarPausa() {
+      leitorAtivo = !leitorAtivo;
+      tocarSom("cmd");
+      if (leitorAtivo) {
+        atualizarStatusLeitor("Leitor ativo - escaneie os produtos", "");
+      } else {
+        atualizarStatusLeitor("Leitor pausado (STOP) — Leia START para retomar", "pausado");
+      }
+    }
+
+    function atualizarStatusLeitor(texto, classe) {
+      const el = document.getElementById("statusLeitor");
+      el.textContent = texto;
+      el.className = `scanner-status ${classe}`;
     }
 
     // ==========================================
-    // 4. MOTOR DE SINCRONIZAÇÃO EM LOTES
+    // SINCRONIZAÇÃO EM LOTES COM A PLANILHA
     // ==========================================
     async function sincronizarLote() {
       if (sincronizando || !navigator.onLine || URL_APPS_SCRIPT.includes("COLE_AQUI")) return;
 
-      const todas = await obterTodasLeituras();
-      const pendentes = todas.filter(item => item.status === "pendente").slice(0, TAMANHO_LOTE);
-      if (pendentes.length === 0) return;
+      const todas = await dbGetAll("leituras");
+      const pendentes = todas.filter(i => i.status === "pendente").slice(0, TAMANHO_LOTE);
+      const excluidos = await dbGetAll("excluidos");
+
+      if (pendentes.length === 0 && excluidos.length === 0) return;
 
       sincronizando = true;
       const btn = document.getElementById("btnSync");
-      btn.disabled = true;
       btn.textContent = "Sincronizando...";
 
       try {
         const resp = await fetch(URL_APPS_SCRIPT, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ leituras: pendentes })
+          body: JSON.stringify({
+            leituras: pendentes,
+            excluidos: excluidos.map(e => e.id)
+          })
         });
         const dados = await resp.json();
 
         if (dados.status === "ok") {
-          await marcarComoSincronizados(pendentes.map(p => p.id));
-          await atualizarInterface();
+          for (const item of pendentes) {
+            item.status = "sincronizado";
+            await dbPut("leituras", item);
+          }
+          for (const ex of excluidos) {
+            await dbDelete("excluidos", ex.id);
+          }
+          await atualizarTela();
         }
       } catch (err) {
-        console.warn("Sem resposta do servidor, mantendo na fila offline:", err);
+        console.warn("Aguardando conexão estável:", err);
       } finally {
         sincronizando = false;
-        btn.disabled = false;
         btn.textContent = "Sincronizar Agora";
       }
     }
 
     // ==========================================
-    // 5. INTERFACE, CONFIGURAÇÕES E UTILITÁRIOS
+    // ATUALIZAÇÃO DA INTERFACE
     // ==========================================
-    async function atualizarInterface() {
-      const todas = await obterTodasLeituras();
-      todas.sort((a, b) => b.timestamp - a.timestamp);
+    async function atualizarTela() {
+      const op = document.getElementById("cfgOP").value.trim() || "348274";
+      const peca = document.getElementById("cfgPeca").value.trim() || "CAPA CORRENTE - K62J";
+      const meta = parseInt(document.getElementById("cfgMeta").value, 10) || 100;
+      const embalagem = parseInt(document.getElementById("cfgEmbalagem").value, 10) || 1;
+      const operador = document.getElementById("cfgOperador").value.trim() || "31618";
 
-      const pendentes = todas.filter(i => i.status === "pendente").length;
-      const sincronizados = todas.length - pendentes;
+      document.getElementById("bannerOP").textContent = `OP: ${op} | Nome: ${peca}`;
+      document.getElementById("displayMeta").textContent = `/${meta}`;
+      document.getElementById("infoEmbalagem").textContent = embalagem;
+      document.getElementById("infoOperador").textContent = operador;
 
-      document.getElementById("cntTotal").textContent = todas.length;
-      document.getElementById("cntPendentes").textContent = pendentes;
-      document.getElementById("cntSincronizados").textContent = sincronizados;
+      const todas = await dbGetAll("leituras");
+      const daEmbalagemAtual = todas
+        .filter(i => i.op === op && String(i.embalagem) === String(embalagem))
+        .sort((a, b) => b.timestamp - a.timestamp);
 
-      const tbody = document.getElementById("tabelaRecentes");
-      tbody.innerHTML = todas.slice(0, 10).map(item => `
-        <tr>
-          <td>${item.dataHora.split(" ")[1] || item.dataHora}</td>
-          <td><strong>${item.codigoQR}</strong></td>
-          <td>${item.posto}</td>
-          <td class="${item.status === 'pendente' ? 'tag-pend' : 'tag-ok'}">
-            ${item.status === 'pendente' ? 'Na Fila Local' : 'Sincronizado'}
-          </td>
-        </tr>
+      const pendentesCount = todas.filter(i => i.status === "pendente").length;
+
+      document.getElementById("displayContagem").textContent = daEmbalagemAtual.length;
+      document.getElementById("infoContagem").textContent = daEmbalagemAtual.length;
+      document.getElementById("badgeFila").textContent = `Fila Local: ${pendentesCount}`;
+      document.getElementById("totalGeralTurno").textContent = `Total Geral: ${todas.length}`;
+
+      const listaEl = document.getElementById("listaProdutos");
+      listaEl.innerHTML = daEmbalagemAtual.map(item => `
+        <div class="item-bip">
+          <div>
+            <strong>Código: ${item.codigoQR}</strong>
+            <div class="item-meta">Hora: ${item.dataHora} • operador: ${item.operador} (${item.status === 'pendente' ? 'Pendente' : 'OK'})</div>
+          </div>
+          <button class="btn-del" onclick="excluirLeitura('${item.id}')" title="Excluir leitura">🗑️</button>
+        </div>
       `).join("");
+    }
+
+    function salvarConfig() {
+      localStorage.setItem("cc2_op", document.getElementById("cfgOP").value);
+      localStorage.setItem("cc2_peca", document.getElementById("cfgPeca").value);
+      localStorage.setItem("cc2_meta", document.getElementById("cfgMeta").value);
+      localStorage.setItem("cc2_emb", document.getElementById("cfgEmbalagem").value);
+      localStorage.setItem("cc2_opd", document.getElementById("cfgOperador").value);
+      atualizarTela();
+    }
+
+    function carregarConfig() {
+      if (localStorage.getItem("cc2_op")) document.getElementById("cfgOP").value = localStorage.getItem("cc2_op");
+      if (localStorage.getItem("cc2_peca")) document.getElementById("cfgPeca").value = localStorage.getItem("cc2_peca");
+      if (localStorage.getItem("cc2_meta")) document.getElementById("cfgMeta").value = localStorage.getItem("cc2_meta");
+      if (localStorage.getItem("cc2_emb")) document.getElementById("cfgEmbalagem").value = localStorage.getItem("cc2_emb");
+      if (localStorage.getItem("cc2_opd")) document.getElementById("cfgOperador").value = localStorage.getItem("cc2_opd");
     }
 
     function atualizarStatusRede() {
       const el = document.getElementById("statusRede");
       if (navigator.onLine) {
-        el.textContent = "● ONLINE — Sincronização ativa";
-        el.className = "badge-rede online";
+        el.textContent = "● Conectado ao sistema";
+        el.className = "badge online";
         sincronizarLote();
       } else {
-        el.textContent = "● OFFLINE — Operando em memória local";
-        el.className = "badge-rede offline";
+        el.textContent = "● Modo Offline (Salvo local)";
+        el.className = "badge offline";
       }
     }
 
-    function salvarConfig() {
-      localStorage.setItem("cc_posto", document.getElementById("cfgPosto").value);
-      localStorage.setItem("cc_operador", document.getElementById("cfgOperador").value);
-      localStorage.setItem("cc_modo", document.getElementById("cfgModo").value);
-    }
-
-    function carregarConfig() {
-      document.getElementById("cfgPosto").value = localStorage.getItem("cc_posto") || "INJ-01";
-      document.getElementById("cfgOperador").value = localStorage.getItem("cc_operador") || "";
-      document.getElementById("cfgModo").value = localStorage.getItem("cc_modo") || "unico";
-    }
-
-    function simularLeituraTeste() {
-      const codigoFake = "PEC-" + Math.floor(100000 + Math.random() * 900000);
-      processarCodigo(codigoFake);
+    function simularBip() {
+      const num = Math.floor(10000000 + Math.random() * 90000000);
+      processarLeitura(`TUTI-MAO-${num}`);
     }
 
     async function exportarCSV() {
-      const todas = await obterTodasLeituras();
-      if (todas.length === 0) return alert("Nenhum registro local para exportar.");
-      const linhas = ["ID;Data_Hora;Codigo_QR;Posto;Operador;Status"];
-      todas.forEach(r => linhas.push(`${r.id};${r.dataHora};${r.codigoQR};${r.posto};${r.operador};${r.status}`));
+      const todas = await dbGetAll("leituras");
+      if (todas.length === 0) return alert("Sem leituras salvas para exportar.");
+      const linhas = ["ID;Data_Hora;OP;Nome_Peca;Embalagem;Codigo_QR;Operador;Status"];
+      todas.forEach(r => linhas.push(`${r.id};${r.dataHora};${r.op};${r.nomePeca};${r.embalagem};${r.codigoQR};${r.operador};${r.status}`));
       const blob = new Blob([linhas.join("\n")], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `backup_contagem_${new Date().toISOString().slice(0,10)}.csv`;
-      link.click();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `contagem_certa_OP${document.getElementById("cfgOP").value}.csv`;
+      a.click();
     }
 
     async function limparTurno() {
-      const todas = await obterTodasLeituras();
-      const pendentes = todas.filter(i => i.status === "pendente").length;
-      if (pendentes > 0 && !confirm(`Existem ${pendentes} leituras NÃO sincronizadas. Deseja apagar mesmo assim?`)) return;
-      if (!confirm("Zerar o contador local para iniciar novo turno?")) return;
+      const todas = await dbGetAll("leituras");
+      const pend = todas.filter(i => i.status === "pendente").length;
+      if (pend > 0 && !confirm(`Há ${pend} leituras pendentes na fila offline. Deseja zerar mesmo assim?`)) return;
+      if (!confirm("Zerar todos os dados locais para iniciar novo turno?")) return;
 
-      const tx = db.transaction(["leituras"], "readwrite");
+      const tx = db.transaction(["leituras", "excluidos"], "readwrite");
       tx.objectStore("leituras").clear();
-      tx.oncomplete = () => atualizarInterface();
+      tx.objectStore("excluidos").clear();
+      tx.oncomplete = () => {
+        document.getElementById("cfgEmbalagem").value = 1;
+        salvarConfig();
+      };
     }
 
-    // Inicialização
     window.addEventListener("online", atualizarStatusRede);
     window.addEventListener("offline", atualizarStatusRede);
 
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./sw.js").catch(err => console.warn("SW erro:", err));
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
     }
 
     (async () => {
       carregarConfig();
       await iniciarDB();
       atualizarStatusRede();
-      await atualizarInterface();
+      await atualizarTela();
       setInterval(sincronizarLote, INTERVALO_SYNC_MS);
     })();
   </script>
