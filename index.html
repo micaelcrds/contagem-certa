@@ -5,21 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Conta Certa - Produção</title>
   <link rel="manifest" href="./manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --border: #334155;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --green: #10b981;
-      --red: #ef4444;
-      --amber: #f59e0b;
-      --blue: #3b82f6;
+      --bg: #eef2f6;
+      --card: #ffffff;
+      --card-subtle: #f8fafc;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --muted: #475569;
+      --green: #059669;
+      --green-bg: #ecfdf5;
+      --green-border: #6ee7b7;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --red-border: #fca5a5;
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+      --amber-border: #fcd34d;
+      --blue: #2563eb;
+      --blue-bg: #eff6ff;
+      --shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
     }
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    
-    /* Trava a altura exata da tela do aparelho sem rolagem externa */
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
@@ -33,7 +48,7 @@
     body {
       display: flex;
       flex-direction: column;
-      padding: clamp(8px, 1.5vh, 14px);
+      padding: clamp(8px, 1.4vh, 14px);
       gap: clamp(8px, 1.2vh, 12px);
     }
 
@@ -43,137 +58,304 @@
       justify-content: space-between;
       align-items: center;
       background: var(--card);
-      padding: 8px 12px;
-      border-radius: 10px;
+      padding: 8px 14px;
+      border-radius: 12px;
       border: 1px solid var(--border);
-      gap: 8px;
+      box-shadow: var(--shadow);
+      gap: 10px;
       flex-shrink: 0;
     }
-    .brand-area { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+    }
+
     .brand-logo {
-      height: clamp(26px, 3.8vh, 36px);
+      height: clamp(28px, 4vh, 38px);
       width: auto;
       object-fit: contain;
       display: block;
       flex-shrink: 0;
     }
-    .header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-    .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; white-space: nowrap; }
-    .online { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid var(--green); }
-    .offline { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid var(--red); }
-    .queue-badge { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid var(--amber); }
+
+    .op-info {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(12px, 1.7vw, 15px);
+      font-weight: 800;
+      background: var(--card-subtle);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .badge {
+      padding: 5px 11px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .online { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .offline { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+    .queue-badge { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+
     .btn-admin {
-      background: var(--bg);
+      background: var(--card-subtle);
       color: var(--text);
       border: 1px solid var(--border);
-      padding: 6px 10px;
+      padding: 6px 12px;
       border-radius: 8px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
     }
+    .btn-admin:hover { background: #e2e8f0; }
 
-    /* 2. Painel Central (Contagem + Informações) */
+    /* 2. Painel Central: Contagem em Destaque + Informações */
     .main-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.25fr 1fr;
       gap: clamp(8px, 1.2vh, 12px);
       flex-shrink: 0;
     }
+    @media (max-width: 640px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
     .panel {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 14px;
       padding: clamp(10px, 1.5vh, 16px);
+      box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
-    .contagem-display { text-align: center; }
-    .contagem-label { font-size: clamp(12px, 1.6vw, 15px); color: var(--muted); font-weight: 700; }
-    .contagem-numero { font-size: clamp(38px, 7vh, 68px); font-weight: 900; line-height: 1; margin: 2px 0; }
-    .contagem-meta {
-      font-size: clamp(16px, 2.5vh, 22px);
-      font-weight: 700;
-      color: var(--muted);
-      border-top: 2px solid var(--border);
-      display: inline-block;
-      padding: 2px 20px 0;
+
+    /* Card de Contagem com Alto Destaque */
+    .contagem-hero {
+      background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+      border: 2px solid #93c5fd;
+      text-align: center;
+      position: relative;
     }
 
-    .info-box { text-align: center; }
-    .info-box h3 { margin: 0 0 6px 0; font-size: clamp(12px, 1.6vw, 15px); color: var(--muted); }
-    .info-line { font-size: clamp(13px, 2vh, 18px); font-weight: 800; margin: 3px 0; }
-    .info-line span { color: var(--blue); }
+    .contagem-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(12px, 1.6vh, 14px);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    .contagem-valores {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 6px;
+      margin: 2px 0 6px;
+    }
+
+    .contagem-numero {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(48px, 8.5vh, 84px);
+      font-weight: 900;
+      line-height: 0.95;
+      color: var(--text);
+      letter-spacing: -2px;
+    }
+
+    .contagem-meta {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(20px, 3.2vh, 30px);
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .progress-track {
+      width: 100%;
+      max-width: 320px;
+      height: 10px;
+      background: #dbeafe;
+      border-radius: 99px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--blue);
+      border-radius: 99px;
+      transition: width 0.25s ease, background-color 0.25s ease;
+    }
+    .progress-fill.completa { background: var(--green); }
+
+    /* Card de Informações */
+    .info-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+    }
+    .info-box h3 {
+      margin: 0 0 2px 0;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-subtle);
+      border: 1px solid #e2e8f0;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: clamp(12px, 1.7vh, 14px);
+      font-weight: 700;
+    }
+    .info-row span {
+      color: var(--blue);
+      font-weight: 800;
+      text-align: right;
+    }
     .op-deslogado { color: var(--amber) !important; }
 
-    /* 3. Área Inferior (Leitor/Instruções + Lista Interna com Scroll Próprio) */
+    /* 3. Área Inferior (Instruções Aprimoradas + Lista de Peças) */
     .bottom-grid {
       display: grid;
       grid-template-columns: 1fr 1.15fr;
       gap: clamp(8px, 1.2vh, 12px);
       flex: 1;
-      min-height: 0; /* Permite encolher sem estourar a tela */
+      min-height: 0;
     }
     @media (max-width: 640px) {
       .bottom-grid { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
     }
 
-    .instrucoes { font-size: clamp(11px, 1.5vh, 13px); line-height: 1.45; color: var(--muted); }
-    .tag-cmd { padding: 1px 5px; border-radius: 4px; font-weight: 800; font-size: 11px; }
-    .cmd-start { background: rgba(16, 185, 129, 0.25); color: #34d399; }
-    .cmd-stop { background: rgba(239, 68, 68, 0.25); color: #f87171; }
+    .instrucoes-panel {
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .instrucoes-titulo {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      margin: 0 0 4px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(4px, 0.8vh, 8px);
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card-subtle);
+      border: 1px solid #e2e8f0;
+      padding: clamp(5px, 0.9vh, 8px) 10px;
+      border-radius: 8px;
+      font-size: clamp(11px, 1.5vh, 13px);
+      color: var(--muted);
+      line-height: 1.3;
+    }
+
+    .step-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--blue-bg);
+      color: var(--blue);
+      font-weight: 800;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-item strong { color: var(--text); }
+
+    .tag-cmd {
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 800;
+      font-size: 11px;
+    }
+    .cmd-start { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .cmd-stop { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
 
     .scanner-status {
-      margin-top: 8px;
-      padding: 8px 10px;
-      border-radius: 8px;
+      padding: clamp(8px, 1.2vh, 12px);
+      border-radius: 10px;
       font-weight: 800;
       font-size: clamp(12px, 1.6vh, 14px);
       text-align: center;
-      border: 2px solid var(--green);
-      background: rgba(16, 185, 129, 0.12);
-      color: #34d399;
+      border: 2px solid var(--green-border);
+      background: var(--green-bg);
+      color: var(--green);
     }
-    .scanner-status.pausado { border-color: var(--amber); background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-    .scanner-status.erro { border-color: var(--red); background: rgba(239, 68, 68, 0.2); color: #f87171; }
-
-    #campoQR {
-      width: 100%;
-      margin-top: 8px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 14px;
-      text-align: center;
-      outline: none;
+    .scanner-status.pausado {
+      border-color: var(--amber-border);
+      background: var(--amber-bg);
+      color: var(--amber);
+    }
+    .scanner-status.erro {
+      border-color: var(--red-border);
+      background: var(--red-bg);
+      color: var(--red);
     }
 
     /* Lista Interna Rolável */
     .lista-panel { justify-content: flex-start; min-height: 0; overflow: hidden; }
     .lista-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-shrink: 0; }
-    .lista-header h3 { margin: 0; font-size: 13px; color: var(--muted); }
+    .lista-header h3 { margin: 0; font-size: 13px; color: var(--text); font-weight: 800; }
     .lista-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-right: 2px; }
     .item-bip {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 6px 10px;
-      border-radius: 6px;
+      background: var(--card-subtle);
+      border: 1px solid #e2e8f0;
+      padding: 7px 10px;
+      border-radius: 8px;
       font-size: 12px;
       flex-shrink: 0;
     }
     .item-bip strong { color: var(--text); font-size: 13px; }
-    .item-meta { color: var(--muted); font-size: 11px; }
+    .item-meta { color: var(--muted); font-size: 11px; margin-top: 1px; }
 
     /* 4. Barra de Ações Fixa no Rodapé */
     .footer-bar {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
@@ -182,24 +364,25 @@
     .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
     button.act {
       background: var(--blue);
-      color: white;
+      color: #ffffff;
       border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
+      padding: 8px 13px;
+      border-radius: 8px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
     }
     button.act.sec { background: var(--card); border: 1px solid var(--border); color: var(--text); }
-    button.act.test { background: #6366f1; }
-    button.act.warn { background: #b45309; }
+    button.act.test { background: #4f46e5; }
+    button.act.warn { background: #d97706; }
 
     /* Modal Administrador */
     .modal-backdrop {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(2, 6, 23, 0.85);
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(2px);
       z-index: 50;
       align-items: center;
       justify-content: center;
@@ -209,35 +392,38 @@
     .modal-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 18px;
       width: 100%;
-      max-width: 480px;
+      max-width: 500px;
       max-height: 90dvh;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
     }
-    .modal-card h2 { margin: 0; font-size: 18px; color: var(--text); }
+    .modal-card h2 { margin: 0; font-size: 17px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; }
     .form-row { display: flex; flex-direction: column; gap: 4px; }
-    .form-row label { font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
-    .form-row input, .form-row select {
-      background: var(--bg);
+    .form-row label { font-size: 11px; color: var(--muted); font-weight: 800; text-transform: uppercase; }
+    .form-row input, .form-row select, .form-row textarea {
+      background: var(--card-subtle);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 14px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
     }
     .btn-del {
-      background: rgba(239, 68, 68, 0.2);
-      color: #f87171;
-      border: 1px solid var(--red);
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid var(--red-border);
       border-radius: 6px;
       padding: 4px 8px;
       cursor: pointer;
       font-weight: 700;
+      font-size: 11px;
     }
   </style>
 </head>
@@ -256,39 +442,68 @@
     </div>
   </div>
 
-  <!-- 2. Contadores Principais -->
+  <!-- 2. Contagem em Destaque & Informações -->
   <div class="main-grid">
-    <div class="panel contagem-display">
-      <div class="contagem-label">Contagem</div>
-      <div class="contagem-numero" id="displayContagem">0</div>
-      <div><span class="contagem-meta" id="displayMeta">/100</span></div>
+    <div class="panel contagem-hero">
+      <div class="contagem-label">Peças Contadas na Embalagem</div>
+      <div class="contagem-valores">
+        <span class="contagem-numero" id="displayContagem">0</span>
+        <span class="contagem-meta" id="displayMeta">/ 100</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="barraProgresso"></div>
+      </div>
     </div>
 
     <div class="panel info-box">
-      <h3>Informações</h3>
-      <div class="info-line">CONTAGEM ATUAL: <span id="infoContagem">0</span></div>
-      <div class="info-line">EMBALAGEM: <span id="infoEmbalagem">1</span></div>
-      <div class="info-line">OPERADOR: <span id="infoOperador" class="op-deslogado">NÃO LOGADO</span></div>
+      <h3>Dados do Posto</h3>
+      <div class="info-row">
+        <div>OPERADOR</div>
+        <span id="infoOperador" class="op-deslogado">NÃO LOGADO</span>
+      </div>
+      <div class="info-row">
+        <div>EMBALAGEM ATUAL</div>
+        <span id="infoEmbalagem">Nº 1</span>
+      </div>
+      <div class="info-row">
+        <div>TOTAL NO TURNO</div>
+        <span id="totalGeralTurno">0 peças</span>
+      </div>
     </div>
   </div>
 
-  <!-- 3. Leitor e Lista de Produtos -->
+  <!-- 3. Instruções Claras e Produtos Escaneados -->
   <div class="bottom-grid">
-    <div class="panel">
-      <div class="instrucoes">
-        • <strong>Início de Turno:</strong> Leia o QR do seu <strong>Crachá</strong><br>
-        • <strong>Nova Embalagem:</strong> Leia <span class="tag-cmd cmd-start">START</span> (após fechar 100%)<br>
-        • <strong>Pausar Leitura:</strong> Leia <span class="tag-cmd cmd-stop">STOP</span>
+    <div class="panel instrucoes-panel">
+      <div>
+        <div class="instrucoes-titulo">Como Operar o Sistema</div>
+        <div class="steps-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div><strong>Entrar no Turno:</strong> Aponte o leitor para o QR Code do seu <strong>Crachá</strong>.</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div><strong>Contar Peças:</strong> Bipe a etiqueta QR de cada peça até completar a caixa.</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div><strong>Pausar / Retomar:</strong> Leia o QR <span class="tag-cmd cmd-stop">PAUSAR</span> para interromper ou <span class="tag-cmd cmd-start">INICIAR</span> para voltar.</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div><strong>Próxima Caixa:</strong> Ao atingir 100% da embalagem, leia <span class="tag-cmd cmd-start">INICIAR</span> para abrir a próxima.</div>
+          </div>
+        </div>
       </div>
 
       <div id="statusLeitor" class="scanner-status pausado">Aguardando leitura do CRACHÁ do operador</div>
-      <input type="text" id="campoQR" inputmode="none" autocomplete="off" autofocus placeholder="Leia Crachá, Peça, START ou STOP...">
     </div>
 
     <div class="panel lista-panel">
       <div class="lista-header">
-        <h3>Produtos Escaneados (Embalagem Atual)</h3>
-        <span style="font-size: 11px; color: var(--muted);" id="totalGeralTurno">Total Turno: 0</span>
+        <h3>Peças Escaneadas (Embalagem Atual)</h3>
+        <span style="font-size: 11px; color: var(--muted); font-weight: 600;" id="subtituloLista">Embalagem 1</span>
       </div>
       <div class="lista-scroll" id="listaProdutos"></div>
     </div>
@@ -301,12 +516,11 @@
       <button class="act sec" onclick="encerrarSessaoOperador()">Trocar Operador</button>
     </div>
 
-    <!-- Barra de Simulação para Testes no Celular (Pode ser ocultada no Admin) -->
     <div class="btn-group" id="barraSimulacao">
       <button class="act test" onclick="simularCracha()">Testar Crachá</button>
       <button class="act test" onclick="simularPeca()">Testar Peça</button>
-      <button class="act sec" onclick="processarLeitura('START')">QR START</button>
-      <button class="act warn" onclick="processarLeitura('STOP')">QR STOP</button>
+      <button class="act sec" onclick="processarLeitura('INICIAR')">QR INICIAR</button>
+      <button class="act warn" onclick="processarLeitura('PAUSAR')">QR PAUSAR</button>
     </div>
   </div>
 
@@ -320,7 +534,6 @@
         <button class="btn-admin" onclick="fecharModalAdmin()">✕ Fechar</button>
       </div>
 
-      <!-- Tela de Login Admin -->
       <div id="adminLoginBox" style="display:flex; flex-direction:column; gap:10px;">
         <div class="form-row">
           <label>PIN de Administrador (Padrão: 1234)</label>
@@ -329,7 +542,6 @@
         <button class="act" onclick="autenticarAdmin()">Desbloquear Painel</button>
       </div>
 
-      <!-- Conteúdo Desbloqueado Admin -->
       <div id="adminContentBox" style="display:none; flex-direction:column; gap:10px;">
         <div class="form-row">
           <label>Simular Seleção de O.P. (Pré-definidas)</label>
@@ -362,11 +574,16 @@
         </div>
 
         <div class="form-row">
+          <label>Cadastro de Operadores (1 por linha: Matrícula - Nome)</label>
+          <textarea id="admOperadores" rows="3" placeholder="31618 - Carlos Silva&#10;32410 - Ana Souza"></textarea>
+        </div>
+
+        <div class="form-row">
           <label>Alterar PIN do Administrador</label>
           <input type="text" id="admNovoPin" placeholder="Deixe em branco para manter o atual">
         </div>
 
-        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; font-weight:600;">
           <input type="checkbox" id="admMostrarTestes" checked>
           Exibir botões de simulação de teste no rodapé
         </label>
@@ -382,7 +599,7 @@
 
         <div class="form-row" style="margin-top:6px;">
           <label>Remover Leitura Específica (Embalagem Atual)</label>
-          <div id="adminListaExcluir" style="display:flex; flex-direction:column; gap:4px; max-height:140px; overflow-y:auto;"></div>
+          <div id="adminListaExcluir" style="display:flex; flex-direction:column; gap:4px; max-height:130px; overflow-y:auto;"></div>
         </div>
       </div>
     </div>
@@ -399,7 +616,9 @@
     let db;
     let sincronizando = false;
     let leitorAtivo = true;
-    let operadorAtual = localStorage.getItem("cc3_operador") || "";
+    let operadorAtual = localStorage.getItem("cc4_operador") || "";
+    let bufferScanner = "";
+    let timerScanner = null;
     let ultimoCodigo = "";
     let ultimoTimestamp = 0;
 
@@ -440,7 +659,7 @@
     // ==========================================
     function iniciarDB() {
       return new Promise((resolve, reject) => {
-        const req = indexedDB.open("ContagemCertaV3", 1);
+        const req = indexedDB.open("ContagemCertaV4", 1);
         req.onupgradeneeded = (e) => {
           const database = e.target.result;
           database.createObjectStore("leituras", { keyPath: "id" });
@@ -476,37 +695,59 @@
     }
 
     // ==========================================
-    // CONFIGURAÇÕES ARMAZENADAS
+    // CONFIGURAÇÕES & CADASTRO DE OPERADORES
     // ==========================================
     function getConfig() {
+      const listaPadraoOps = "31618 - Carlos Silva\n32410 - Ana Souza\n33902 - Marcos Oliveira";
       return {
-        op: localStorage.getItem("cc3_op") || "348274",
-        peca: localStorage.getItem("cc3_peca") || "CAPA CORRENTE - K62J",
-        meta: parseInt(localStorage.getItem("cc3_meta") || "100", 10),
-        embalagem: parseInt(localStorage.getItem("cc3_emb") || "1", 10),
-        pin: localStorage.getItem("cc3_pin") || "1234",
-        mostrarTestes: localStorage.getItem("cc3_testes") !== "false"
+        op: localStorage.getItem("cc4_op") || "348274",
+        peca: localStorage.getItem("cc4_peca") || "CAPA CORRENTE - K62J",
+        meta: parseInt(localStorage.getItem("cc4_meta") || "100", 10),
+        embalagem: parseInt(localStorage.getItem("cc4_emb") || "1", 10),
+        pin: localStorage.getItem("cc4_pin") || "1234",
+        mostrarTestes: localStorage.getItem("cc4_testes") !== "false",
+        operadoresTexto: localStorage.getItem("cc4_ops_lista") || listaPadraoOps
       };
     }
 
-    // ==========================================
-    // CAPTURA E VALIDAÇÃO DE LEITURA QR
-    // ==========================================
-    const campoQR = document.getElementById("campoQR");
-
-    document.addEventListener("click", (e) => {
-      const modalAberto = document.getElementById("modalAdmin").classList.contains("open");
-      if (!modalAberto && !["INPUT", "SELECT", "BUTTON"].includes(e.target.tagName)) {
-        campoQR.focus();
+    function buscarNomeOperador(matricula) {
+      const linhas = getConfig().operadoresTexto.split("\n");
+      for (const linha of linhas) {
+        const partes = linha.split("-");
+        if (partes.length >= 2 && partes[0].trim() === String(matricula).trim()) {
+          return partes.slice(1).join("-").trim();
+        }
       }
-    });
+      return "Operador Cadastrado";
+    }
 
-    campoQR.addEventListener("keydown", async (e) => {
+    function formatarOperadorExibicao(matricula) {
+      if (!matricula) return "NÃO LOGADO";
+      const nome = buscarNomeOperador(matricula);
+      return `${matricula} — ${nome}`;
+    }
+
+    // ==========================================
+    // CAPTURA GLOBAL DO LEITOR QR (SEM INPUT NA TELA)
+    // ==========================================
+    document.addEventListener("keydown", async (e) => {
+      const modalAberto = document.getElementById("modalAdmin").classList.contains("open");
+      if (modalAberto) return;
+
       if (e.key === "Enter") {
-        e.preventDefault();
-        const codigo = campoQR.value.trim();
-        campoQR.value = "";
-        if (codigo) await processarLeitura(codigo);
+        if (bufferScanner.trim().length > 0) {
+          e.preventDefault();
+          const codigo = bufferScanner.trim();
+          bufferScanner = "";
+          await processarLeitura(codigo);
+        }
+        return;
+      }
+
+      if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        bufferScanner += e.key;
+        clearTimeout(timerScanner);
+        timerScanner = setTimeout(() => { bufferScanner = ""; }, 400);
       }
     });
 
@@ -514,39 +755,46 @@
       const cmd = codigoRaw.toUpperCase();
       const cfg = getConfig();
 
-      // 1. Identifica leitura de CRACHÁ (apenas números, ex: 31618)
+      // 1. Leitura de CRACHÁ (apenas números, ex: 31618)
       const ehCracha = /^\d{3,10}$/.test(codigoRaw);
       if (ehCracha) {
+        // BLOQUEIO: Se já existe operador logado, impede novo login direto
+        if (operadorAtual) {
+          tocarSom("erro");
+          atualizarStatusLeitor(`BLOQUEADO! Operador ${operadorAtual} já está logado. Clique em "Trocar Operador" primeiro.`, "erro");
+          return;
+        }
+
         operadorAtual = codigoRaw;
-        localStorage.setItem("cc3_operador", operadorAtual);
+        localStorage.setItem("cc4_operador", operadorAtual);
         leitorAtivo = true;
         tocarSom("cmd");
-        atualizarStatusLeitor(`Operador ${operadorAtual} logado — escaneie os produtos`, "");
+        atualizarStatusLeitor(`Bem-vindo(a), ${formatarOperadorExibicao(operadorAtual)}! Pode iniciar a contagem.`, "");
         await atualizarTela();
         return;
       }
 
-      // 2. Exige operador logado antes de qualquer outra ação
+      // 2. Exige operador logado antes de qualquer outra leitura
       if (!operadorAtual) {
         tocarSom("erro");
-        atualizarStatusLeitor("BLOQUEADO! Leia o QR Code do seu CRACHÁ primeiro", "erro");
+        atualizarStatusLeitor("BLOQUEADO! Leia primeiro o QR Code do seu CRACHÁ.", "erro");
         return;
       }
 
-      // 3. Comando QR: STOP
-      if (cmd === "STOP") {
+      // 3. Comando QR: PAUSAR (aceita STOP por compatibilidade)
+      if (cmd === "PAUSAR" || cmd === "STOP") {
         leitorAtivo = false;
         tocarSom("cmd");
-        atualizarStatusLeitor("Leitor pausado (STOP) — Leia START para retomar", "pausado");
+        atualizarStatusLeitor("Contagem PAUSADA — Leia o QR INICIAR para continuar", "pausado");
         return;
       }
 
-      // 4. Comando QR: START (Bloqueia nova embalagem se a atual não estiver 100% completa)
-      if (cmd === "START") {
+      // 4. Comando QR: INICIAR (aceita START por compatibilidade)
+      if (cmd === "INICIAR" || cmd === "START") {
         if (!leitorAtivo) {
           leitorAtivo = true;
           tocarSom("cmd");
-          atualizarStatusLeitor("Leitor retomado - escaneie os produtos", "");
+          atualizarStatusLeitor("Leitor ativo — escaneie as peças", "");
           return;
         }
 
@@ -555,22 +803,22 @@
 
         if (qtdAtual < cfg.meta) {
           tocarSom("erro");
-          atualizarStatusLeitor(`START BLOQUEADO! Complete a embalagem atual (${qtdAtual}/${cfg.meta}) antes de iniciar outra.`, "erro");
+          atualizarStatusLeitor(`BLOQUEADO! Complete a embalagem atual (${qtdAtual}/${cfg.meta}) antes de iniciar outra.`, "erro");
           return;
         }
 
         const novaEmb = cfg.embalagem + 1;
-        localStorage.setItem("cc3_emb", String(novaEmb));
+        localStorage.setItem("cc4_emb", String(novaEmb));
         tocarSom("cmd");
-        atualizarStatusLeitor(`Nova Embalagem ${novaEmb} iniciada — escaneie os produtos`, "");
+        atualizarStatusLeitor(`Embalagem Nº ${novaEmb} iniciada — escaneie as peças`, "");
         await atualizarTela();
         return;
       }
 
-      // 5. Bloqueia leitura de peça se estiver pausado (STOP)
+      // 5. Bloqueia leitura de peça se estiver pausado
       if (!leitorAtivo) {
         tocarSom("erro");
-        atualizarStatusLeitor("BLOQUEADO! Leitor em STOP — Leia START para continuar", "erro");
+        atualizarStatusLeitor("BLOQUEADO! Sistema pausado — Leia o QR INICIAR primeiro", "erro");
         return;
       }
 
@@ -585,14 +833,14 @@
       const todas = await dbGetAll("leituras");
       if (todas.some(item => item.codigoQR === codigoRaw)) {
         tocarSom("erro");
-        atualizarStatusLeitor(`DUPLICADO! Etiqueta já registrada: ${codigoRaw}`, "erro");
+        atualizarStatusLeitor(`PEÇA DUPLICADA! Etiqueta já registrada: ${codigoRaw}`, "erro");
         return;
       }
 
       const qtdNaEmbalagem = todas.filter(i => i.op === cfg.op && Number(i.embalagem) === cfg.embalagem).length;
       if (qtdNaEmbalagem >= cfg.meta) {
         tocarSom("erro");
-        atualizarStatusLeitor(`EMBALAGEM ${cfg.embalagem} COMPLETA (${cfg.meta}/${cfg.meta})! Leia START para abrir a próxima.`, "pausado");
+        atualizarStatusLeitor(`EMBALAGEM ${cfg.embalagem} COMPLETA (${cfg.meta}/${cfg.meta})! Leia INICIAR para abrir a próxima.`, "pausado");
         return;
       }
 
@@ -607,7 +855,7 @@
         nomePeca: cfg.peca,
         embalagem: cfg.embalagem,
         codigoQR: codigoRaw,
-        operador: operadorAtual,
+        operador: formatarOperadorExibicao(operadorAtual),
         status: "pendente"
       };
 
@@ -615,19 +863,20 @@
       tocarSom("ok");
 
       if (qtdNaEmbalagem + 1 === cfg.meta) {
-        atualizarStatusLeitor(`EMBALAGEM ${cfg.embalagem} CONCLUÍDA (${cfg.meta}/${cfg.meta})! Leia START para iniciar a próxima.`, "pausado");
+        atualizarStatusLeitor(`EMBALAGEM Nº ${cfg.embalagem} CONCLUÍDA (${cfg.meta}/${cfg.meta})! Leia INICIAR para nova caixa.`, "pausado");
       } else {
-        atualizarStatusLeitor("Leitor ativo - escaneie os produtos", "");
+        atualizarStatusLeitor("Leitor ativo — escaneie as peças", "");
       }
 
       await atualizarTela();
     }
 
     function encerrarSessaoOperador() {
+      if (!operadorAtual) return;
       operadorAtual = "";
-      localStorage.removeItem("cc3_operador");
+      localStorage.removeItem("cc4_operador");
       tocarSom("cmd");
-      atualizarStatusLeitor("Operador desconectado — Leia o CRACHÁ para iniciar", "pausado");
+      atualizarStatusLeitor("Sessão encerrada — Leia o CRACHÁ do próximo operador", "pausado");
       atualizarTela();
     }
 
@@ -650,7 +899,6 @@
 
     function fecharModalAdmin() {
       document.getElementById("modalAdmin").classList.remove("open");
-      campoQR.focus();
     }
 
     async function autenticarAdmin() {
@@ -670,6 +918,7 @@
       document.getElementById("admPeca").value = cfg.peca;
       document.getElementById("admMeta").value = cfg.meta;
       document.getElementById("admEmbalagem").value = cfg.embalagem;
+      document.getElementById("admOperadores").value = cfg.operadoresTexto;
       document.getElementById("admNovoPin").value = "";
       document.getElementById("admMostrarTestes").checked = cfg.mostrarTestes;
 
@@ -690,15 +939,17 @@
       const peca = document.getElementById("admPeca").value.trim() || "PRODUTO";
       const meta = Math.max(1, parseInt(document.getElementById("admMeta").value, 10) || 100);
       const emb = Math.max(1, parseInt(document.getElementById("admEmbalagem").value, 10) || 1);
+      const opsTexto = document.getElementById("admOperadores").value.trim();
       const novoPin = document.getElementById("admNovoPin").value.trim();
       const mostrarTestes = document.getElementById("admMostrarTestes").checked;
 
-      localStorage.setItem("cc3_op", op);
-      localStorage.setItem("cc3_peca", peca);
-      localStorage.setItem("cc3_meta", String(meta));
-      localStorage.setItem("cc3_emb", String(emb));
-      localStorage.setItem("cc3_testes", String(mostrarTestes));
-      if (novoPin) localStorage.setItem("cc3_pin", novoPin);
+      localStorage.setItem("cc4_op", op);
+      localStorage.setItem("cc4_peca", peca);
+      localStorage.setItem("cc4_meta", String(meta));
+      localStorage.setItem("cc4_emb", String(emb));
+      localStorage.setItem("cc4_ops_lista", opsTexto);
+      localStorage.setItem("cc4_testes", String(mostrarTestes));
+      if (novoPin) localStorage.setItem("cc4_pin", novoPin);
 
       tocarSom("ok");
       fecharModalAdmin();
@@ -719,7 +970,7 @@
       }
       box.innerHTML = atuais.map(item => `
         <div class="item-bip">
-          <span>${item.codigoQR} (${item.dataHora.split(" ")[1] || ""})</span>
+          <span><strong>${item.codigoQR}</strong> (${item.dataHora.split(" ")[1] || ""})</span>
           <button class="btn-del" onclick="excluirLeituraAdmin('${item.id}')">Excluir</button>
         </div>
       `).join("");
@@ -739,7 +990,7 @@
       tx.objectStore("leituras").clear();
       tx.objectStore("excluidos").clear();
       tx.oncomplete = async () => {
-        localStorage.setItem("cc3_emb", "1");
+        localStorage.setItem("cc4_emb", "1");
         tocarSom("cmd");
         fecharModalAdmin();
         await atualizarTela();
@@ -798,13 +1049,14 @@
       const cfg = getConfig();
 
       document.getElementById("bannerOP").textContent = `OP: ${cfg.op} | ${cfg.peca}`;
-      document.getElementById("displayMeta").textContent = `/${cfg.meta}`;
-      document.getElementById("infoEmbalagem").textContent = cfg.embalagem;
+      document.getElementById("displayMeta").textContent = `/ ${cfg.meta}`;
+      document.getElementById("infoEmbalagem").textContent = `Nº ${cfg.embalagem}`;
+      document.getElementById("subtituloLista").textContent = `Embalagem Nº ${cfg.embalagem}`;
       document.getElementById("barraSimulacao").style.display = cfg.mostrarTestes ? "flex" : "none";
 
       const opEl = document.getElementById("infoOperador");
       if (operadorAtual) {
-        opEl.textContent = operadorAtual;
+        opEl.textContent = formatarOperadorExibicao(operadorAtual);
         opEl.className = "";
       } else {
         opEl.textContent = "NÃO LOGADO";
@@ -816,19 +1068,25 @@
         .filter(i => i.op === cfg.op && Number(i.embalagem) === cfg.embalagem)
         .sort((a, b) => b.timestamp - a.timestamp);
 
+      const qtdAtual = daEmbalagemAtual.length;
       const pendentesCount = todas.filter(i => i.status === "pendente").length;
 
-      document.getElementById("displayContagem").textContent = daEmbalagemAtual.length;
-      document.getElementById("infoContagem").textContent = daEmbalagemAtual.length;
+      document.getElementById("displayContagem").textContent = qtdAtual;
       document.getElementById("badgeFila").textContent = `Fila: ${pendentesCount}`;
-      document.getElementById("totalGeralTurno").textContent = `Total Turno: ${todas.length}`;
+      document.getElementById("totalGeralTurno").textContent = `${todas.length} peças`;
+
+      // Atualiza barra de progresso
+      const pct = Math.min(100, Math.round((qtdAtual / cfg.meta) * 100));
+      const barra = document.getElementById("barraProgresso");
+      barra.style.width = `${pct}%`;
+      barra.className = qtdAtual >= cfg.meta ? "progress-fill completa" : "progress-fill";
 
       const listaEl = document.getElementById("listaProdutos");
       listaEl.innerHTML = daEmbalagemAtual.map(item => `
         <div class="item-bip">
           <div>
             <strong>${item.codigoQR}</strong>
-            <div class="item-meta">Hora: ${item.dataHora} • op: ${item.operador} (${item.status === 'pendente' ? 'Local' : 'Sync'})</div>
+            <div class="item-meta">Hora: ${item.dataHora} • ${item.operador} (${item.status === 'pendente' ? 'Local' : 'Sync'})</div>
           </div>
         </div>
       `).join("");
@@ -877,7 +1135,7 @@
     (async () => {
       await iniciarDB();
       if (operadorAtual) {
-        atualizarStatusLeitor(`Operador ${operadorAtual} logado — escaneie os produtos`, "");
+        atualizarStatusLeitor(`Operador ativo: ${formatarOperadorExibicao(operadorAtual)}`, "");
       }
       atualizarStatusRede();
       await atualizarTela();
