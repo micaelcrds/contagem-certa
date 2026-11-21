@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Conta Certa - Offline First</title>
+  <title>Conta Certa - Produção</title>
   <link rel="manifest" href="./manifest.json">
   <style>
     :root {
       --bg: #0f172a;
       --card: #1e293b;
-      --card-light: #263349;
       --border: #334155;
       --text: #f8fafc;
       --muted: #94a3b8;
@@ -19,111 +18,250 @@
       --blue: #3b82f6;
     }
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { margin: 0; background: var(--bg); color: var(--text); padding: 12px; display: flex; flex-direction: column; min-height: 100vh; gap: 12px; }
+    
+    /* Trava a altura exata da tela do aparelho sem rolagem externa */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+    }
 
-    /* Cabeçalho estilo painel industrial */
-    .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
-    .brand { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-    .brand-title { font-weight: 900; font-size: 18px; color: var(--green); letter-spacing: 0.5px; }
-    .op-banner { font-size: 15px; font-weight: 700; color: var(--text); background: var(--bg); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); }
-    .status-group { display: flex; align-items: center; gap: 8px; }
-    .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+    body {
+      display: flex;
+      flex-direction: column;
+      padding: clamp(8px, 1.5vh, 14px);
+      gap: clamp(8px, 1.2vh, 12px);
+    }
+
+    /* 1. Cabeçalho Superior */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .brand-area { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+    .brand-title { font-weight: 900; font-size: clamp(14px, 2vw, 18px); color: var(--green); white-space: nowrap; }
+    .op-info {
+      font-size: clamp(12px, 1.8vw, 15px);
+      font-weight: 700;
+      background: var(--bg);
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; white-space: nowrap; }
     .online { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid var(--green); }
     .offline { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid var(--red); }
     .queue-badge { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid var(--amber); }
+    .btn-admin {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
 
-    /* Painel de Configuração da OP / Turno */
-    .setup-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; background: var(--card); padding: 10px; border-radius: 10px; border: 1px solid var(--border); }
-    .field-group { display: flex; flex-direction: column; gap: 4px; }
-    .field-group label { font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
-    .field-group input, .field-group select { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 8px 10px; border-radius: 6px; font-size: 14px; font-weight: 600; }
-
-    /* Grid Principal: Contagem vs Informações */
-    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 680px) { .main-grid { grid-template-columns: 1fr; } }
-
-    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: center; }
+    /* 2. Painel Central (Contagem + Informações) */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(8px, 1.2vh, 12px);
+      flex-shrink: 0;
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: clamp(10px, 1.5vh, 16px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
     .contagem-display { text-align: center; }
-    .contagem-label { font-size: 15px; color: var(--muted); font-weight: 700; }
-    .contagem-numero { font-size: 64px; font-weight: 900; line-height: 1.05; margin: 4px 0; color: var(--text); }
-    .contagem-meta { font-size: 22px; font-weight: 700; color: var(--muted); border-top: 2px solid var(--border); display: inline-block; padding: 4px 24px 0; }
+    .contagem-label { font-size: clamp(12px, 1.6vw, 15px); color: var(--muted); font-weight: 700; }
+    .contagem-numero { font-size: clamp(38px, 7vh, 68px); font-weight: 900; line-height: 1; margin: 2px 0; }
+    .contagem-meta {
+      font-size: clamp(16px, 2.5vh, 22px);
+      font-weight: 700;
+      color: var(--muted);
+      border-top: 2px solid var(--border);
+      display: inline-block;
+      padding: 2px 20px 0;
+    }
 
     .info-box { text-align: center; }
-    .info-box h3 { margin: 0 0 10px 0; font-size: 16px; color: var(--muted); }
-    .info-line { font-size: 18px; font-weight: 800; margin: 4px 0; letter-spacing: 0.4px; }
+    .info-box h3 { margin: 0 0 6px 0; font-size: clamp(12px, 1.6vw, 15px); color: var(--muted); }
+    .info-line { font-size: clamp(13px, 2vh, 18px); font-weight: 800; margin: 3px 0; }
     .info-line span { color: var(--blue); }
+    .op-deslogado { color: var(--amber) !important; }
 
-    /* Área Inferior: Instruções + Produtos Escaneados */
-    .bottom-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 12px; flex: 1; }
-    @media (max-width: 680px) { .bottom-grid { grid-template-columns: 1fr; } }
+    /* 3. Área Inferior (Leitor/Instruções + Lista Interna com Scroll Próprio) */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: clamp(8px, 1.2vh, 12px);
+      flex: 1;
+      min-height: 0; /* Permite encolher sem estourar a tela */
+    }
+    @media (max-width: 640px) {
+      .bottom-grid { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    }
 
-    .instrucoes { font-size: 14px; line-height: 1.6; color: var(--muted); }
-    .instrucoes strong { color: var(--text); }
-    .tag-cmd { padding: 2px 6px; border-radius: 4px; font-weight: 800; font-size: 12px; }
+    .instrucoes { font-size: clamp(11px, 1.5vh, 13px); line-height: 1.45; color: var(--muted); }
+    .tag-cmd { padding: 1px 5px; border-radius: 4px; font-weight: 800; font-size: 11px; }
     .cmd-start { background: rgba(16, 185, 129, 0.25); color: #34d399; }
     .cmd-stop { background: rgba(239, 68, 68, 0.25); color: #f87171; }
 
-    .scanner-status { margin-top: 14px; padding: 12px; border-radius: 8px; font-weight: 800; font-size: 15px; text-align: center; border: 2px solid var(--green); background: rgba(16, 185, 129, 0.12); color: #34d399; }
+    .scanner-status {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: clamp(12px, 1.6vh, 14px);
+      text-align: center;
+      border: 2px solid var(--green);
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+    }
     .scanner-status.pausado { border-color: var(--amber); background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
     .scanner-status.erro { border-color: var(--red); background: rgba(239, 68, 68, 0.2); color: #f87171; }
 
-    #campoQR { width: 100%; margin-top: 10px; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; font-size: 16px; text-align: center; outline: none; }
+    #campoQR {
+      width: 100%;
+      margin-top: 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 14px;
+      text-align: center;
+      outline: none;
+    }
 
-    /* Lista de Produtos Escaneados */
-    .lista-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .lista-header h3 { margin: 0; font-size: 15px; color: var(--muted); }
-    .lista-scroll { overflow-y: auto; max-height: 220px; display: flex; flex-direction: column; gap: 6px; }
-    .item-bip { display: flex; justify-content: space-between; align-items: center; background: var(--bg); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; font-size: 13px; }
-    .item-bip strong { color: var(--text); font-size: 14px; }
-    .item-meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
-    .btn-del { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 6px; padding: 6px 10px; cursor: pointer; font-weight: 700; }
+    /* Lista Interna Rolável */
+    .lista-panel { justify-content: flex-start; min-height: 0; overflow: hidden; }
+    .lista-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-shrink: 0; }
+    .lista-header h3 { margin: 0; font-size: 13px; color: var(--muted); }
+    .lista-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-right: 2px; }
+    .item-bip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    .item-bip strong { color: var(--text); font-size: 13px; }
+    .item-meta { color: var(--muted); font-size: 11px; }
 
-    /* Barra de Ações */
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    button.act { background: var(--blue); color: white; border: none; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    /* 4. Barra de Ações Fixa no Rodapé */
+    .footer-bar {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    button.act {
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
     button.act.sec { background: var(--card); border: 1px solid var(--border); color: var(--text); }
     button.act.test { background: #6366f1; }
+    button.act.warn { background: #b45309; }
+
+    /* Modal Administrador */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.85);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90dvh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .modal-card h2 { margin: 0; font-size: 18px; color: var(--text); }
+    .form-row { display: flex; flex-direction: column; gap: 4px; }
+    .form-row label { font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+    .form-row input, .form-row select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .btn-del {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid var(--red);
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
 
-  <!-- 1. Cabeçalho OP / Nome / Status -->
+  <!-- 1. Cabeçalho -->
   <div class="header">
-    <div class="brand">
+    <div class="brand-area">
       <div class="brand-title">CONTA CERTA</div>
-      <div class="op-banner" id="bannerOP">OP: 348274 | Nome: CAPA CORRENTE - K62J</div>
+      <div class="op-info" id="bannerOP">OP: 348274 | CAPA CORRENTE - K62J</div>
     </div>
-    <div class="status-group">
-      <span class="badge queue-badge" id="badgeFila">Fila Local: 0</span>
-      <span class="badge online" id="statusRede">● Conectado ao sistema</span>
-    </div>
-  </div>
-
-  <!-- 2. Parâmetros da Ordem de Produção -->
-  <div class="setup-bar">
-    <div class="field-group">
-      <label>Ordem de Produção (OP)</label>
-      <input type="text" id="cfgOP" value="348274" oninput="salvarConfig()">
-    </div>
-    <div class="field-group">
-      <label>Nome / Descrição da Peça</label>
-      <input type="text" id="cfgPeca" value="CAPA CORRENTE - K62J" oninput="salvarConfig()">
-    </div>
-    <div class="field-group">
-      <label>Qtd. por Embalagem</label>
-      <input type="number" id="cfgMeta" value="100" min="1" oninput="salvarConfig()">
-    </div>
-    <div class="field-group">
-      <label>Embalagem Atual</label>
-      <input type="number" id="cfgEmbalagem" value="1" min="1" oninput="salvarConfig()">
-    </div>
-    <div class="field-group">
-      <label>Operador (Matrícula)</label>
-      <input type="text" id="cfgOperador" value="31618" oninput="salvarConfig()">
+    <div class="header-actions">
+      <span class="badge queue-badge" id="badgeFila">Fila: 0</span>
+      <span class="badge online" id="statusRede">● Online</span>
+      <button class="btn-admin" onclick="abrirModalAdmin()">🔒 Admin</button>
     </div>
   </div>
 
-  <!-- 3. Painel Contagem & Informações -->
+  <!-- 2. Contadores Principais -->
   <div class="main-grid">
     <div class="panel contagem-display">
       <div class="contagem-label">Contagem</div>
@@ -135,41 +273,124 @@
       <h3>Informações</h3>
       <div class="info-line">CONTAGEM ATUAL: <span id="infoContagem">0</span></div>
       <div class="info-line">EMBALAGEM: <span id="infoEmbalagem">1</span></div>
-      <div class="info-line">OPERADOR: <span id="infoOperador">31618</span></div>
+      <div class="info-line">OPERADOR: <span id="infoOperador" class="op-deslogado">NÃO LOGADO</span></div>
     </div>
   </div>
 
-  <!-- 4. Instruções / Leitor e Produtos Escaneados -->
+  <!-- 3. Leitor e Lista de Produtos -->
   <div class="bottom-grid">
     <div class="panel">
       <div class="instrucoes">
-        <strong>Instruções:</strong><br>
-        • Para iniciar nova embalagem, leia o QR Code <span class="tag-cmd cmd-start">START</span><br>
-        • Para parar a contagem, leia o QR Code <span class="tag-cmd cmd-stop">STOP</span><br>
-        • Aproxime o QR Code do produto para registrar
+        • <strong>Início de Turno:</strong> Leia o QR do seu <strong>Crachá</strong><br>
+        • <strong>Nova Embalagem:</strong> Leia <span class="tag-cmd cmd-start">START</span> (após fechar 100%)<br>
+        • <strong>Pausar Leitura:</strong> Leia <span class="tag-cmd cmd-stop">STOP</span>
       </div>
 
-      <div id="statusLeitor" class="scanner-status">Leitor ativo - escaneie os produtos</div>
-      <input type="text" id="campoQR" inputmode="none" autocomplete="off" autofocus placeholder="Aguardando leitura QR (Produto, START ou STOP)...">
+      <div id="statusLeitor" class="scanner-status pausado">Aguardando leitura do CRACHÁ do operador</div>
+      <input type="text" id="campoQR" inputmode="none" autocomplete="off" autofocus placeholder="Leia Crachá, Peça, START ou STOP...">
     </div>
 
-    <div class="panel" style="justify-content: flex-start;">
+    <div class="panel lista-panel">
       <div class="lista-header">
         <h3>Produtos Escaneados (Embalagem Atual)</h3>
-        <span style="font-size: 12px; color: var(--muted);" id="totalGeralTurno">Total Geral: 0</span>
+        <span style="font-size: 11px; color: var(--muted);" id="totalGeralTurno">Total Turno: 0</span>
       </div>
       <div class="lista-scroll" id="listaProdutos"></div>
     </div>
   </div>
 
-  <!-- 5. Controles Operacionais -->
-  <div class="actions">
-    <button class="act" id="btnSync" onclick="sincronizarLote()">Sincronizar Agora</button>
-    <button class="act sec" onclick="novaEmbalagemManual()">+ Nova Embalagem (START)</button>
-    <button class="act sec" onclick="alternarPausa()">Pausar / Retomar (STOP)</button>
-    <button class="act test" onclick="simularBip()">Simular Bip (Teste)</button>
-    <button class="act sec" onclick="exportarCSV()">Backup CSV</button>
-    <button class="act sec" onclick="limparTurno()">Zerar Turno</button>
+  <!-- 4. Rodapé Operacional + Simulador de Testes -->
+  <div class="footer-bar">
+    <div class="btn-group">
+      <button class="act" id="btnSync" onclick="sincronizarLote()">Sincronizar Agora</button>
+      <button class="act sec" onclick="encerrarSessaoOperador()">Trocar Operador</button>
+    </div>
+
+    <!-- Barra de Simulação para Testes no Celular (Pode ser ocultada no Admin) -->
+    <div class="btn-group" id="barraSimulacao">
+      <button class="act test" onclick="simularCracha()">Testar Crachá</button>
+      <button class="act test" onclick="simularPeca()">Testar Peça</button>
+      <button class="act sec" onclick="processarLeitura('START')">QR START</button>
+      <button class="act warn" onclick="processarLeitura('STOP')">QR STOP</button>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL ADMINISTRADOR (PROTEGIDO POR SENHA)  -->
+  <!-- ========================================== -->
+  <div class="modal-backdrop" id="modalAdmin">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>Configurações da Produção (Admin)</h2>
+        <button class="btn-admin" onclick="fecharModalAdmin()">✕ Fechar</button>
+      </div>
+
+      <!-- Tela de Login Admin -->
+      <div id="adminLoginBox" style="display:flex; flex-direction:column; gap:10px;">
+        <div class="form-row">
+          <label>PIN de Administrador (Padrão: 1234)</label>
+          <input type="password" id="inputPinAdmin" inputmode="numeric" placeholder="Digite o PIN...">
+        </div>
+        <button class="act" onclick="autenticarAdmin()">Desbloquear Painel</button>
+      </div>
+
+      <!-- Conteúdo Desbloqueado Admin -->
+      <div id="adminContentBox" style="display:none; flex-direction:column; gap:10px;">
+        <div class="form-row">
+          <label>Simular Seleção de O.P. (Pré-definidas)</label>
+          <select id="presetOP" onchange="aplicarPresetOP()">
+            <option value="">-- Selecione uma OP simulada ou edite abaixo --</option>
+            <option value="348274|CAPA CORRENTE - K62J|100">OP 348274 — CAPA CORRENTE - K62J (100/emb)</option>
+            <option value="349105|TAMPA SUPERIOR - X12|50">OP 349105 — TAMPA SUPERIOR - X12 (50/emb)</option>
+            <option value="350012|SUPORTE MOTOR - M90|10">OP 350012 — SUPORTE MOTOR - M90 (10/emb - Teste Rápido)</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label>Número da O.P.</label>
+          <input type="text" id="admOP">
+        </div>
+
+        <div class="form-row">
+          <label>Descrição do Produto</label>
+          <input type="text" id="admPeca">
+        </div>
+
+        <div class="form-row">
+          <label>Quantidade por Embalagem</label>
+          <input type="number" id="admMeta" min="1">
+        </div>
+
+        <div class="form-row">
+          <label>Forçar Número da Embalagem Atual</label>
+          <input type="number" id="admEmbalagem" min="1">
+        </div>
+
+        <div class="form-row">
+          <label>Alterar PIN do Administrador</label>
+          <input type="text" id="admNovoPin" placeholder="Deixe em branco para manter o atual">
+        </div>
+
+        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+          <input type="checkbox" id="admMostrarTestes" checked>
+          Exibir botões de simulação de teste no rodapé
+        </label>
+
+        <button class="act" onclick="salvarConfigAdmin()">Salvar Alterações</button>
+
+        <hr style="border-color: var(--border); width: 100%; margin: 4px 0;">
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="act sec" onclick="exportarCSV()">Baixar Backup CSV</button>
+          <button class="act warn" onclick="limparTurnoAdmin()">Zerar Todo o Turno</button>
+        </div>
+
+        <div class="form-row" style="margin-top:6px;">
+          <label>Remover Leitura Específica (Embalagem Atual)</label>
+          <div id="adminListaExcluir" style="display:flex; flex-direction:column; gap:4px; max-height:140px; overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -183,11 +404,12 @@
     let db;
     let sincronizando = false;
     let leitorAtivo = true;
+    let operadorAtual = localStorage.getItem("cc3_operador") || "";
     let ultimoCodigo = "";
     let ultimoTimestamp = 0;
 
     // ==========================================
-    // SINTETIZADOR DE ÁUDIO (WEB AUDIO API)
+    // ÁUDIO SINTÉTICO (WEB AUDIO API)
     // ==========================================
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function tocarSom(tipo) {
@@ -219,11 +441,11 @@
     }
 
     // ==========================================
-    // BANCO DE DADOS LOCAL (INDEXEDDB)
+    // BANCO LOCAL (INDEXEDDB)
     // ==========================================
     function iniciarDB() {
       return new Promise((resolve, reject) => {
-        const req = indexedDB.open("ContagemCertaV2", 1);
+        const req = indexedDB.open("ContagemCertaV3", 1);
         req.onupgradeneeded = (e) => {
           const database = e.target.result;
           database.createObjectStore("leituras", { keyPath: "id" });
@@ -234,37 +456,52 @@
       });
     }
 
-    function dbGetAll(storeName) {
+    function dbGetAll(store) {
       return new Promise((resolve) => {
-        const tx = db.transaction([storeName], "readonly");
-        const req = tx.objectStore(storeName).getAll();
+        const tx = db.transaction([store], "readonly");
+        const req = tx.objectStore(store).getAll();
         req.onsuccess = () => resolve(req.result || []);
       });
     }
 
-    function dbPut(storeName, item) {
+    function dbPut(store, item) {
       return new Promise((resolve) => {
-        const tx = db.transaction([storeName], "readwrite");
-        tx.objectStore(storeName).put(item);
+        const tx = db.transaction([store], "readwrite");
+        tx.objectStore(store).put(item);
         tx.oncomplete = () => resolve();
       });
     }
 
-    function dbDelete(storeName, id) {
+    function dbDelete(store, id) {
       return new Promise((resolve) => {
-        const tx = db.transaction([storeName], "readwrite");
-        tx.objectStore(storeName).delete(id);
+        const tx = db.transaction([store], "readwrite");
+        tx.objectStore(store).delete(id);
         tx.oncomplete = () => resolve();
       });
     }
 
     // ==========================================
-    // LÓGICA DE LEITURA (PRODUTO, START E STOP)
+    // CONFIGURAÇÕES ARMAZENADAS
+    // ==========================================
+    function getConfig() {
+      return {
+        op: localStorage.getItem("cc3_op") || "348274",
+        peca: localStorage.getItem("cc3_peca") || "CAPA CORRENTE - K62J",
+        meta: parseInt(localStorage.getItem("cc3_meta") || "100", 10),
+        embalagem: parseInt(localStorage.getItem("cc3_emb") || "1", 10),
+        pin: localStorage.getItem("cc3_pin") || "1234",
+        mostrarTestes: localStorage.getItem("cc3_testes") !== "false"
+      };
+    }
+
+    // ==========================================
+    // CAPTURA E VALIDAÇÃO DE LEITURA QR
     // ==========================================
     const campoQR = document.getElementById("campoQR");
 
     document.addEventListener("click", (e) => {
-      if (!["INPUT", "SELECT", "BUTTON"].includes(e.target.tagName)) {
+      const modalAberto = document.getElementById("modalAdmin").classList.contains("open");
+      if (!modalAberto && !["INPUT", "SELECT", "BUTTON"].includes(e.target.tagName)) {
         campoQR.focus();
       }
     });
@@ -280,34 +517,69 @@
 
     async function processarLeitura(codigoRaw) {
       const cmd = codigoRaw.toUpperCase();
+      const cfg = getConfig();
 
-      // Comando QR: STOP
-      if (cmd === "STOP") {
-        leitorAtivo = false;
+      // 1. Identifica leitura de CRACHÁ (apenas números, ex: 31618)
+      const ehCracha = /^\d{3,10}$/.test(codigoRaw);
+      if (ehCracha) {
+        operadorAtual = codigoRaw;
+        localStorage.setItem("cc3_operador", operadorAtual);
+        leitorAtivo = true;
         tocarSom("cmd");
-        atualizarStatusLeitor("Leitor pausado (QR STOP lido) — Leia START para retomar", "pausado");
+        atualizarStatusLeitor(`Operador ${operadorAtual} logado — escaneie os produtos`, "");
+        await atualizarTela();
         return;
       }
 
-      // Comando QR: START (retoma ou avança embalagem se a atual já tiver peças)
+      // 2. Exige operador logado antes de qualquer outra ação
+      if (!operadorAtual) {
+        tocarSom("erro");
+        atualizarStatusLeitor("BLOQUEADO! Leia o QR Code do seu CRACHÁ primeiro", "erro");
+        return;
+      }
+
+      // 3. Comando QR: STOP
+      if (cmd === "STOP") {
+        leitorAtivo = false;
+        tocarSom("cmd");
+        atualizarStatusLeitor("Leitor pausado (STOP) — Leia START para retomar", "pausado");
+        return;
+      }
+
+      // 4. Comando QR: START (Bloqueia nova embalagem se a atual não estiver 100% completa)
       if (cmd === "START") {
         if (!leitorAtivo) {
           leitorAtivo = true;
           tocarSom("cmd");
-          atualizarStatusLeitor("Leitor ativo - escaneie os produtos", "");
-        } else {
-          await novaEmbalagemManual();
+          atualizarStatusLeitor("Leitor retomado - escaneie os produtos", "");
+          return;
         }
+
+        const todas = await dbGetAll("leituras");
+        const qtdAtual = todas.filter(i => i.op === cfg.op && Number(i.embalagem) === cfg.embalagem).length;
+
+        if (qtdAtual < cfg.meta) {
+          tocarSom("erro");
+          atualizarStatusLeitor(`START BLOQUEADO! Complete a embalagem atual (${qtdAtual}/${cfg.meta}) antes de iniciar outra.`, "erro");
+          return;
+        }
+
+        const novaEmb = cfg.embalagem + 1;
+        localStorage.setItem("cc3_emb", String(novaEmb));
+        tocarSom("cmd");
+        atualizarStatusLeitor(`Nova Embalagem ${novaEmb} iniciada — escaneie os produtos`, "");
+        await atualizarTela();
         return;
       }
 
-      // Bloqueia se o leitor estiver em STOP
+      // 5. Bloqueia leitura de peça se estiver pausado (STOP)
       if (!leitorAtivo) {
         tocarSom("erro");
-        atualizarStatusLeitor("BLOQUEADO! Leitor em STOP — Leia o QR START primeiro", "erro");
+        atualizarStatusLeitor("BLOQUEADO! Leitor em STOP — Leia START para continuar", "erro");
         return;
       }
 
+      // 6. Validação de peça (evita leitura dupla rápida e código repetido)
       const agora = Date.now();
       if (codigoRaw === ultimoCodigo && (agora - ultimoTimestamp) < 1200) {
         tocarSom("erro");
@@ -322,17 +594,10 @@
         return;
       }
 
-      const op = document.getElementById("cfgOP").value.trim() || "SEM-OP";
-      const nomePeca = document.getElementById("cfgPeca").value.trim() || "PECA";
-      const meta = parseInt(document.getElementById("cfgMeta").value, 10) || 100;
-      let embalagem = parseInt(document.getElementById("cfgEmbalagem").value, 10) || 1;
-      const operador = document.getElementById("cfgOperador").value.trim() || "00000";
-
-      // Verifica se a embalagem atual já atingiu a meta (ex: 100/100)
-      const qtdNaEmbalagem = todas.filter(i => String(i.embalagem) === String(embalagem) && i.op === op).length;
-      if (qtdNaEmbalagem >= meta) {
+      const qtdNaEmbalagem = todas.filter(i => i.op === cfg.op && Number(i.embalagem) === cfg.embalagem).length;
+      if (qtdNaEmbalagem >= cfg.meta) {
         tocarSom("erro");
-        atualizarStatusLeitor(`EMBALAGEM ${embalagem} COMPLETA (${meta}/${meta})! Leia START para abrir a próxima.`, "pausado");
+        atualizarStatusLeitor(`EMBALAGEM ${cfg.embalagem} COMPLETA (${cfg.meta}/${cfg.meta})! Leia START para abrir a próxima.`, "pausado");
         return;
       }
 
@@ -340,22 +605,22 @@
       ultimoTimestamp = agora;
 
       const registro = {
-        id: `${op}-E${embalagem}-${agora}-${Math.random().toString(36).substring(2, 5)}`,
+        id: `${cfg.op}-E${cfg.embalagem}-${agora}-${Math.random().toString(36).substring(2, 5)}`,
         timestamp: agora,
         dataHora: new Date().toLocaleString("pt-BR"),
-        op: op,
-        nomePeca: nomePeca,
-        embalagem: embalagem,
+        op: cfg.op,
+        nomePeca: cfg.peca,
+        embalagem: cfg.embalagem,
         codigoQR: codigoRaw,
-        operador: operador,
+        operador: operadorAtual,
         status: "pendente"
       };
 
       await dbPut("leituras", registro);
       tocarSom("ok");
 
-      if (qtdNaEmbalagem + 1 === meta) {
-        atualizarStatusLeitor(`Embalagem ${embalagem} concluída (${meta}/${meta})! Leia START para nova embalagem.`, "pausado");
+      if (qtdNaEmbalagem + 1 === cfg.meta) {
+        atualizarStatusLeitor(`EMBALAGEM ${cfg.embalagem} CONCLUÍDA (${cfg.meta}/${cfg.meta})! Leia START para iniciar a próxima.`, "pausado");
       } else {
         atualizarStatusLeitor("Leitor ativo - escaneie os produtos", "");
       }
@@ -363,42 +628,12 @@
       await atualizarTela();
     }
 
-    async function excluirLeitura(id) {
-      if (!confirm("Remover esta leitura da contagem?")) return;
-      await dbDelete("leituras", id);
-      await dbPut("excluidos", { id: id });
+    function encerrarSessaoOperador() {
+      operadorAtual = "";
+      localStorage.removeItem("cc3_operador");
       tocarSom("cmd");
-      await atualizarTela();
-    }
-
-    async function novaEmbalagemManual() {
-      const todas = await dbGetAll("leituras");
-      const op = document.getElementById("cfgOP").value.trim();
-      const embAtual = parseInt(document.getElementById("cfgEmbalagem").value, 10) || 1;
-      const qtdAtual = todas.filter(i => String(i.embalagem) === String(embAtual) && i.op === op).length;
-
-      if (qtdAtual === 0) {
-        leitorAtivo = true;
-        atualizarStatusLeitor("Leitor ativo - escaneie os produtos", "");
-        return;
-      }
-
-      document.getElementById("cfgEmbalagem").value = embAtual + 1;
-      leitorAtivo = true;
-      salvarConfig();
-      tocarSom("cmd");
-      atualizarStatusLeitor(`Nova Embalagem ${embAtual + 1} iniciada — escaneie os produtos`, "");
-      await atualizarTela();
-    }
-
-    function alternarPausa() {
-      leitorAtivo = !leitorAtivo;
-      tocarSom("cmd");
-      if (leitorAtivo) {
-        atualizarStatusLeitor("Leitor ativo - escaneie os produtos", "");
-      } else {
-        atualizarStatusLeitor("Leitor pausado (STOP) — Leia START para retomar", "pausado");
-      }
+      atualizarStatusLeitor("Operador desconectado — Leia o CRACHÁ para iniciar", "pausado");
+      atualizarTela();
     }
 
     function atualizarStatusLeitor(texto, classe) {
@@ -408,7 +643,116 @@
     }
 
     // ==========================================
-    // SINCRONIZAÇÃO EM LOTES COM A PLANILHA
+    // PAINEL ADMINISTRADOR
+    // ==========================================
+    function abrirModalAdmin() {
+      document.getElementById("inputPinAdmin").value = "";
+      document.getElementById("adminLoginBox").style.display = "flex";
+      document.getElementById("adminContentBox").style.display = "none";
+      document.getElementById("modalAdmin").classList.add("open");
+      setTimeout(() => document.getElementById("inputPinAdmin").focus(), 100);
+    }
+
+    function fecharModalAdmin() {
+      document.getElementById("modalAdmin").classList.remove("open");
+      campoQR.focus();
+    }
+
+    async function autenticarAdmin() {
+      const cfg = getConfig();
+      const digitado = document.getElementById("inputPinAdmin").value.trim();
+      if (digitado !== cfg.pin) {
+        tocarSom("erro");
+        alert("PIN incorreto.");
+        return;
+      }
+
+      tocarSom("cmd");
+      document.getElementById("adminLoginBox").style.display = "none";
+      document.getElementById("adminContentBox").style.display = "flex";
+
+      document.getElementById("admOP").value = cfg.op;
+      document.getElementById("admPeca").value = cfg.peca;
+      document.getElementById("admMeta").value = cfg.meta;
+      document.getElementById("admEmbalagem").value = cfg.embalagem;
+      document.getElementById("admNovoPin").value = "";
+      document.getElementById("admMostrarTestes").checked = cfg.mostrarTestes;
+
+      await renderizarListaExclusaoAdmin();
+    }
+
+    function aplicarPresetOP() {
+      const val = document.getElementById("presetOP").value;
+      if (!val) return;
+      const [op, peca, meta] = val.split("|");
+      document.getElementById("admOP").value = op;
+      document.getElementById("admPeca").value = peca;
+      document.getElementById("admMeta").value = meta;
+    }
+
+    async function salvarConfigAdmin() {
+      const op = document.getElementById("admOP").value.trim() || "348274";
+      const peca = document.getElementById("admPeca").value.trim() || "PRODUTO";
+      const meta = Math.max(1, parseInt(document.getElementById("admMeta").value, 10) || 100);
+      const emb = Math.max(1, parseInt(document.getElementById("admEmbalagem").value, 10) || 1);
+      const novoPin = document.getElementById("admNovoPin").value.trim();
+      const mostrarTestes = document.getElementById("admMostrarTestes").checked;
+
+      localStorage.setItem("cc3_op", op);
+      localStorage.setItem("cc3_peca", peca);
+      localStorage.setItem("cc3_meta", String(meta));
+      localStorage.setItem("cc3_emb", String(emb));
+      localStorage.setItem("cc3_testes", String(mostrarTestes));
+      if (novoPin) localStorage.setItem("cc3_pin", novoPin);
+
+      tocarSom("ok");
+      fecharModalAdmin();
+      await atualizarTela();
+    }
+
+    async function renderizarListaExclusaoAdmin() {
+      const cfg = getConfig();
+      const todas = await dbGetAll("leituras");
+      const atuais = todas
+        .filter(i => i.op === cfg.op && Number(i.embalagem) === cfg.embalagem)
+        .sort((a, b) => b.timestamp - a.timestamp);
+
+      const box = document.getElementById("adminListaExcluir");
+      if (atuais.length === 0) {
+        box.innerHTML = `<span style="font-size:12px; color:var(--muted);">Nenhuma peça na embalagem atual.</span>`;
+        return;
+      }
+      box.innerHTML = atuais.map(item => `
+        <div class="item-bip">
+          <span>${item.codigoQR} (${item.dataHora.split(" ")[1] || ""})</span>
+          <button class="btn-del" onclick="excluirLeituraAdmin('${item.id}')">Excluir</button>
+        </div>
+      `).join("");
+    }
+
+    async function excluirLeituraAdmin(id) {
+      await dbDelete("leituras", id);
+      await dbPut("excluidos", { id: id });
+      tocarSom("cmd");
+      await renderizarListaExclusaoAdmin();
+      await atualizarTela();
+    }
+
+    async function limparTurnoAdmin() {
+      if (!confirm("Tem certeza que deseja zerar todas as contagens locais?")) return;
+      const tx = db.transaction(["leituras", "excluidos"], "readwrite");
+      tx.objectStore("leituras").clear();
+      tx.objectStore("excluidos").clear();
+      tx.oncomplete = async () => {
+        localStorage.setItem("cc3_emb", "1");
+        tocarSom("cmd");
+        fecharModalAdmin();
+        await atualizarTela();
+      };
+    }
+
+    // ==========================================
+    // SINCRONIZAÇÃO COM PLANILHA
     // ==========================================
     async function sincronizarLote() {
       if (sincronizando || !navigator.onLine || URL_APPS_SCRIPT.includes("COLE_AQUI")) return;
@@ -453,74 +797,65 @@
     }
 
     // ==========================================
-    // ATUALIZAÇÃO DA INTERFACE
+    // ATUALIZAÇÃO DA TELA E SIMULADORES
     // ==========================================
     async function atualizarTela() {
-      const op = document.getElementById("cfgOP").value.trim() || "348274";
-      const peca = document.getElementById("cfgPeca").value.trim() || "CAPA CORRENTE - K62J";
-      const meta = parseInt(document.getElementById("cfgMeta").value, 10) || 100;
-      const embalagem = parseInt(document.getElementById("cfgEmbalagem").value, 10) || 1;
-      const operador = document.getElementById("cfgOperador").value.trim() || "31618";
+      const cfg = getConfig();
 
-      document.getElementById("bannerOP").textContent = `OP: ${op} | Nome: ${peca}`;
-      document.getElementById("displayMeta").textContent = `/${meta}`;
-      document.getElementById("infoEmbalagem").textContent = embalagem;
-      document.getElementById("infoOperador").textContent = operador;
+      document.getElementById("bannerOP").textContent = `OP: ${cfg.op} | ${cfg.peca}`;
+      document.getElementById("displayMeta").textContent = `/${cfg.meta}`;
+      document.getElementById("infoEmbalagem").textContent = cfg.embalagem;
+      document.getElementById("barraSimulacao").style.display = cfg.mostrarTestes ? "flex" : "none";
+
+      const opEl = document.getElementById("infoOperador");
+      if (operadorAtual) {
+        opEl.textContent = operadorAtual;
+        opEl.className = "";
+      } else {
+        opEl.textContent = "NÃO LOGADO";
+        opEl.className = "op-deslogado";
+      }
 
       const todas = await dbGetAll("leituras");
       const daEmbalagemAtual = todas
-        .filter(i => i.op === op && String(i.embalagem) === String(embalagem))
+        .filter(i => i.op === cfg.op && Number(i.embalagem) === cfg.embalagem)
         .sort((a, b) => b.timestamp - a.timestamp);
 
       const pendentesCount = todas.filter(i => i.status === "pendente").length;
 
       document.getElementById("displayContagem").textContent = daEmbalagemAtual.length;
       document.getElementById("infoContagem").textContent = daEmbalagemAtual.length;
-      document.getElementById("badgeFila").textContent = `Fila Local: ${pendentesCount}`;
-      document.getElementById("totalGeralTurno").textContent = `Total Geral: ${todas.length}`;
+      document.getElementById("badgeFila").textContent = `Fila: ${pendentesCount}`;
+      document.getElementById("totalGeralTurno").textContent = `Total Turno: ${todas.length}`;
 
       const listaEl = document.getElementById("listaProdutos");
       listaEl.innerHTML = daEmbalagemAtual.map(item => `
         <div class="item-bip">
           <div>
-            <strong>Código: ${item.codigoQR}</strong>
-            <div class="item-meta">Hora: ${item.dataHora} • operador: ${item.operador} (${item.status === 'pendente' ? 'Pendente' : 'OK'})</div>
+            <strong>${item.codigoQR}</strong>
+            <div class="item-meta">Hora: ${item.dataHora} • op: ${item.operador} (${item.status === 'pendente' ? 'Local' : 'Sync'})</div>
           </div>
-          <button class="btn-del" onclick="excluirLeitura('${item.id}')" title="Excluir leitura">🗑️</button>
         </div>
       `).join("");
-    }
-
-    function salvarConfig() {
-      localStorage.setItem("cc2_op", document.getElementById("cfgOP").value);
-      localStorage.setItem("cc2_peca", document.getElementById("cfgPeca").value);
-      localStorage.setItem("cc2_meta", document.getElementById("cfgMeta").value);
-      localStorage.setItem("cc2_emb", document.getElementById("cfgEmbalagem").value);
-      localStorage.setItem("cc2_opd", document.getElementById("cfgOperador").value);
-      atualizarTela();
-    }
-
-    function carregarConfig() {
-      if (localStorage.getItem("cc2_op")) document.getElementById("cfgOP").value = localStorage.getItem("cc2_op");
-      if (localStorage.getItem("cc2_peca")) document.getElementById("cfgPeca").value = localStorage.getItem("cc2_peca");
-      if (localStorage.getItem("cc2_meta")) document.getElementById("cfgMeta").value = localStorage.getItem("cc2_meta");
-      if (localStorage.getItem("cc2_emb")) document.getElementById("cfgEmbalagem").value = localStorage.getItem("cc2_emb");
-      if (localStorage.getItem("cc2_opd")) document.getElementById("cfgOperador").value = localStorage.getItem("cc2_opd");
     }
 
     function atualizarStatusRede() {
       const el = document.getElementById("statusRede");
       if (navigator.onLine) {
-        el.textContent = "● Conectado ao sistema";
+        el.textContent = "● Online";
         el.className = "badge online";
         sincronizarLote();
       } else {
-        el.textContent = "● Modo Offline (Salvo local)";
+        el.textContent = "● Offline";
         el.className = "badge offline";
       }
     }
 
-    function simularBip() {
+    function simularCracha() {
+      processarLeitura("31618");
+    }
+
+    function simularPeca() {
       const num = Math.floor(10000000 + Math.random() * 90000000);
       processarLeitura(`TUTI-MAO-${num}`);
     }
@@ -533,23 +868,8 @@
       const blob = new Blob([linhas.join("\n")], { type: "text/csv;charset=utf-8;" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `contagem_certa_OP${document.getElementById("cfgOP").value}.csv`;
+      a.download = `contagem_certa_OP${getConfig().op}.csv`;
       a.click();
-    }
-
-    async function limparTurno() {
-      const todas = await dbGetAll("leituras");
-      const pend = todas.filter(i => i.status === "pendente").length;
-      if (pend > 0 && !confirm(`Há ${pend} leituras pendentes na fila offline. Deseja zerar mesmo assim?`)) return;
-      if (!confirm("Zerar todos os dados locais para iniciar novo turno?")) return;
-
-      const tx = db.transaction(["leituras", "excluidos"], "readwrite");
-      tx.objectStore("leituras").clear();
-      tx.objectStore("excluidos").clear();
-      tx.oncomplete = () => {
-        document.getElementById("cfgEmbalagem").value = 1;
-        salvarConfig();
-      };
     }
 
     window.addEventListener("online", atualizarStatusRede);
@@ -560,8 +880,10 @@
     }
 
     (async () => {
-      carregarConfig();
       await iniciarDB();
+      if (operadorAtual) {
+        atualizarStatusLeitor(`Operador ${operadorAtual} logado — escaneie os produtos`, "");
+      }
       atualizarStatusRede();
       await atualizarTela();
       setInterval(sincronizarLote, INTERVALO_SYNC_MS);
