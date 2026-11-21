@@ -1,10 +1,11 @@
-const CACHE_NAME = "contagem-certa-v4";
+const CACHE_NAME = "contagem-certa-v5";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./icon-192.png",
-  "./icon-512.png"
+  "./icon-512.png",
+  "./icon-header.png"
 ];
 
 self.addEventListener("install", (event) => {
