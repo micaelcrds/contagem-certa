@@ -1,4 +1,4 @@
-const CACHE_NAME = "contagem-certa-v13";
+const CACHE_NAME = "contagem-certa-v14";
 const ASSETS = [
   "./",
   "./index.html",
