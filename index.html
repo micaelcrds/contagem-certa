@@ -27,7 +27,7 @@
       --amber-border: #fcd34d;
       --blue: #2563eb;
       --blue-bg: #eff6ff;
-      --shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+      --shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
     }
 
     * {
@@ -35,10 +35,13 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
+    /* Encaixe absoluto na tela do aparelho sem rolagem externa */
     html, body {
       margin: 0;
       padding: 0;
-      width: 100%;
+      height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
       background: var(--bg);
       color: var(--text);
     }
@@ -46,17 +49,8 @@
     body {
       display: flex;
       flex-direction: column;
-      min-height: 100dvh;
-      padding: 10px 12px;
-      gap: 10px;
-    }
-
-    /* Trava altura sem scroll APENAS em tablets/monitores ou celular em pé (altura >= 560px) */
-    @media (min-height: 560px) {
-      html, body {
-        height: 100dvh;
-        overflow: hidden;
-      }
+      padding: clamp(4px, 1.1vh, 12px);
+      gap: clamp(4px, 1vh, 10px);
     }
 
     /* 1. Cabeçalho Superior */
@@ -65,25 +59,24 @@
       justify-content: space-between;
       align-items: center;
       background: var(--card);
-      padding: 8px 12px;
-      border-radius: 12px;
+      padding: clamp(4px, 0.9vh, 8px) clamp(8px, 1.4vw, 14px);
+      border-radius: 10px;
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
       gap: 8px;
       flex-shrink: 0;
-      flex-wrap: wrap;
     }
 
     .brand-area {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       min-width: 0;
       flex: 1;
     }
 
     .brand-logo {
-      height: 32px;
+      height: clamp(20px, 3.6vh, 36px);
       width: auto;
       object-fit: contain;
       display: block;
@@ -92,12 +85,12 @@
 
     .op-info {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(12px, 1.6vw, 15px);
+      font-size: clamp(11px, 1.6vw, 15px);
       font-weight: 800;
       background: var(--card-subtle);
       color: var(--text);
-      padding: 5px 10px;
-      border-radius: 8px;
+      padding: clamp(3px, 0.6vh, 6px) 10px;
+      border-radius: 6px;
       border: 1px solid var(--border);
       white-space: nowrap;
       overflow: hidden;
@@ -112,9 +105,9 @@
     }
 
     .badge {
-      padding: 4px 10px;
+      padding: clamp(3px, 0.5vh, 5px) 9px;
       border-radius: 20px;
-      font-size: 11px;
+      font-size: clamp(10px, 1.4vh, 11px);
       font-weight: 800;
       white-space: nowrap;
     }
@@ -126,34 +119,35 @@
       background: var(--card-subtle);
       color: var(--text);
       border: 1px solid var(--border);
-      padding: 5px 10px;
+      padding: clamp(4px, 0.6vh, 6px) 10px;
       border-radius: 8px;
-      font-size: 12px;
+      font-size: clamp(11px, 1.5vh, 12px);
       font-weight: 700;
       cursor: pointer;
     }
 
-    /* 2. Painel Central */
+    /* 2. Painel Central (Contagem + Dados do Posto) */
     .main-grid {
       display: grid;
       grid-template-columns: 1.2fr 1fr;
-      gap: 10px;
+      gap: clamp(4px, 1vh, 10px);
       flex-shrink: 0;
     }
-    @media (max-width: 580px) {
+    @media (max-width: 520px) {
       .main-grid { grid-template-columns: 1fr; }
     }
 
     .panel {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px 14px;
+      border-radius: 12px;
+      padding: clamp(6px, 1.2vh, 14px) clamp(8px, 1.4vw, 14px);
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
       justify-content: center;
       min-width: 0;
+      min-height: 0;
     }
 
     .contagem-hero {
@@ -164,9 +158,9 @@
 
     .contagem-label {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 12px;
+      font-size: clamp(10px, 1.5vh, 13px);
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.7px;
       color: var(--blue);
       font-weight: 800;
     }
@@ -175,33 +169,33 @@
       display: flex;
       align-items: baseline;
       justify-content: center;
-      gap: 6px;
-      margin: 2px 0 6px;
+      gap: 4px;
+      margin: clamp(1px, 0.4vh, 4px) 0;
     }
 
     .contagem-numero {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(42px, 7vh, 80px);
+      font-size: clamp(30px, 7.8vh, 78px);
       font-weight: 900;
-      line-height: 0.95;
+      line-height: 0.92;
       color: var(--text);
-      letter-spacing: -2px;
+      letter-spacing: -1.5px;
     }
 
     .contagem-meta {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(18px, 2.8vh, 28px);
+      font-size: clamp(15px, 3vh, 28px);
       font-weight: 800;
       color: var(--muted);
     }
 
     .progress-track {
       width: 100%;
-      max-width: 300px;
-      height: 9px;
+      max-width: 280px;
+      height: clamp(6px, 1.1vh, 10px);
       background: #dbeafe;
       border-radius: 99px;
-      margin: 0 auto;
+      margin: 2px auto 0;
       overflow: hidden;
     }
 
@@ -218,13 +212,13 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 6px;
+      gap: clamp(3px, 0.6vh, 6px);
     }
     .info-box h3 {
       margin: 0;
-      font-size: 11px;
+      font-size: clamp(10px, 1.4vh, 11px);
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.6px;
       color: var(--muted);
       font-weight: 800;
     }
@@ -234,11 +228,11 @@
       align-items: center;
       background: var(--card-subtle);
       border: 1px solid #e2e8f0;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 13px;
+      padding: clamp(3px, 0.7vh, 6px) 8px;
+      border-radius: 6px;
+      font-size: clamp(11px, 1.6vh, 13px);
       font-weight: 700;
-      gap: 8px;
+      gap: 6px;
     }
     .info-row span {
       color: var(--blue);
@@ -250,103 +244,102 @@
     }
     .op-deslogado { color: var(--amber) !important; }
 
-    /* 3. Área Inferior */
+    /* 3. Área Inferior (absorve exatamente o espaço restante da tela) */
     .bottom-grid {
       display: grid;
       grid-template-columns: 1fr 1.15fr;
-      gap: 10px;
+      gap: clamp(4px, 1vh, 10px);
       flex: 1;
       min-height: 0;
+      overflow: hidden;
     }
-    @media (max-width: 640px) {
-      .bottom-grid { grid-template-columns: 1fr; }
+    @media (max-width: 520px) {
+      .bottom-grid { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
     }
 
     .instrucoes-panel {
       justify-content: space-between;
-      gap: 8px;
-      min-height: 0;
-      overflow-y: auto;
+      gap: clamp(4px, 0.8vh, 8px);
+      overflow: hidden;
     }
 
     .instrucoes-titulo {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 12px;
+      font-size: clamp(10px, 1.5vh, 12px);
       font-weight: 800;
       color: var(--text);
-      margin: 0 0 6px 0;
+      margin: 0 0 clamp(3px, 0.6vh, 6px) 0;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
     }
 
     .steps-list {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: clamp(3px, 0.6vh, 6px);
     }
 
-    /* Em celular na horizontal, organiza as instruções em 2 colunas compactas */
-    @media (max-height: 559px) and (min-width: 581px) {
+    /* Em telas baixas (celular deitado), coloca as instruções em grade 2x2 */
+    @media (max-height: 520px) and (min-width: 521px) {
       .steps-list {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 6px;
-      }
-      .lista-scroll {
-        max-height: 175px;
+        gap: 4px;
       }
     }
 
     .step-item {
       display: flex;
       align-items: flex-start;
-      gap: 8px;
+      gap: 6px;
       background: var(--card-subtle);
       border: 1px solid #e2e8f0;
-      padding: 6px 8px;
-      border-radius: 8px;
-      font-size: 12px;
+      padding: clamp(3px, 0.7vh, 6px) 7px;
+      border-radius: 6px;
+      font-size: clamp(10px, 1.5vh, 12px);
       color: var(--muted);
-      line-height: 1.35;
+      line-height: 1.25;
     }
 
     .step-num {
-      width: 19px;
-      height: 19px;
+      width: clamp(15px, 2.2vh, 19px);
+      height: clamp(15px, 2.2vh, 19px);
       border-radius: 50%;
       background: var(--blue-bg);
       color: var(--blue);
       font-weight: 800;
-      font-size: 11px;
+      font-size: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      margin-top: 1px;
     }
 
     .step-item strong { color: var(--text); }
 
     .tag-cmd {
-      padding: 1px 5px;
-      border-radius: 4px;
+      padding: 0 4px;
+      border-radius: 3px;
       font-weight: 800;
-      font-size: 10px;
+      font-size: 9px;
       display: inline-block;
     }
     .cmd-start { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
     .cmd-stop { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
 
     .scanner-status {
-      padding: 9px 10px;
-      border-radius: 10px;
+      padding: clamp(5px, 1vh, 10px) 8px;
+      border-radius: 8px;
       font-weight: 800;
-      font-size: 13px;
+      font-size: clamp(11px, 1.6vh, 13px);
       text-align: center;
       border: 2px solid var(--green-border);
       background: var(--green-bg);
       color: var(--green);
       flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .scanner-status.pausado {
       border-color: var(--amber-border);
@@ -359,25 +352,26 @@
       color: var(--red);
     }
 
+    /* Lista de peças com scroll interno contido */
     .lista-panel {
       justify-content: flex-start;
-      min-height: 150px;
       overflow: hidden;
     }
     .lista-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       flex-shrink: 0;
     }
-    .lista-header h3 { margin: 0; font-size: 13px; color: var(--text); font-weight: 800; }
+    .lista-header h3 { margin: 0; font-size: clamp(11px, 1.6vh, 13px); color: var(--text); font-weight: 800; }
     .lista-scroll {
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
       padding-right: 2px;
     }
     .item-bip {
@@ -386,40 +380,40 @@
       align-items: center;
       background: var(--card-subtle);
       border: 1px solid #e2e8f0;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 12px;
+      padding: clamp(4px, 0.7vh, 6px) 8px;
+      border-radius: 6px;
+      font-size: 11px;
       flex-shrink: 0;
     }
-    .item-bip strong { color: var(--text); font-size: 13px; }
-    .item-meta { color: var(--muted); font-size: 11px; margin-top: 1px; }
+    .item-bip strong { color: var(--text); font-size: clamp(11px, 1.6vh, 13px); }
+    .item-meta { color: var(--muted); font-size: 10px; }
 
-    /* 4. Barra de Ações no Rodapé */
+    /* 4. Barra de Ações Fixa no Rodapé */
     .footer-bar {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap: 6px;
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
       background: var(--card);
       border: 1px solid var(--border);
-      padding: 8px 10px;
-      border-radius: 12px;
+      padding: clamp(4px, 0.8vh, 8px) 10px;
+      border-radius: 10px;
       box-shadow: var(--shadow);
+      overflow-x: auto;
     }
     .btn-group {
       display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
+      gap: 5px;
+      flex-shrink: 0;
     }
     button.act {
       background: var(--blue);
       color: #ffffff;
       border: none;
-      padding: 8px 11px;
-      border-radius: 8px;
-      font-size: 12px;
+      padding: clamp(5px, 0.9vh, 8px) clamp(8px, 1.1vw, 12px);
+      border-radius: 7px;
+      font-size: clamp(10px, 1.5vh, 12px);
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
@@ -439,7 +433,7 @@
       z-index: 50;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 12px;
     }
     .modal-backdrop.open { display: flex; }
     .modal-card {
@@ -449,21 +443,21 @@
       padding: 16px;
       width: 100%;
       max-width: 500px;
-      max-height: 90dvh;
+      max-height: 92dvh;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25);
     }
-    .modal-card h2 { margin: 0; font-size: 17px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; }
+    .modal-card h2 { margin: 0; font-size: 16px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; }
     .form-row { display: flex; flex-direction: column; gap: 4px; }
     .form-row label { font-size: 11px; color: var(--muted); font-weight: 800; text-transform: uppercase; }
     .form-row input, .form-row select, .form-row textarea {
       background: var(--card-subtle);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 9px 10px;
+      padding: 8px 10px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
@@ -484,7 +478,7 @@
       position: relative;
       width: 100%;
       aspect-ratio: 4 / 3;
-      max-height: 52dvh;
+      max-height: 50dvh;
       background: #0f172a;
       border-radius: 10px;
       overflow: hidden;
@@ -504,9 +498,9 @@
       pointer-events: none;
     }
     .camera-feedback {
-      padding: 10px;
+      padding: 8px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 800;
       text-align: center;
       background: var(--card-subtle);
@@ -567,19 +561,19 @@
         <div class="steps-list">
           <div class="step-item">
             <div class="step-num">1</div>
-            <div><strong>Entrar no Turno:</strong> Aponte o leitor para o QR Code do seu <strong>Crachá</strong>.</div>
+            <div><strong>Entrar:</strong> Leia o QR do seu <strong>Crachá</strong>.</div>
           </div>
           <div class="step-item">
             <div class="step-num">2</div>
-            <div><strong>Contar Peças:</strong> Bipe a etiqueta QR de cada peça até completar a caixa.</div>
+            <div><strong>Contar:</strong> Bipe o QR de cada peça da caixa.</div>
           </div>
           <div class="step-item">
             <div class="step-num">3</div>
-            <div><strong>Pausar / Retomar:</strong> Leia <span class="tag-cmd cmd-stop">PAUSAR</span> para parar ou <span class="tag-cmd cmd-start">INICIAR</span> para voltar.</div>
+            <div><strong>Pausar:</strong> Leia <span class="tag-cmd cmd-stop">PAUSAR</span> ou <span class="tag-cmd cmd-start">INICIAR</span>.</div>
           </div>
           <div class="step-item">
             <div class="step-num">4</div>
-            <div><strong>Próxima Caixa:</strong> Ao completar 100%, leia <span class="tag-cmd cmd-start">INICIAR</span> para abrir a próxima.</div>
+            <div><strong>Nova Caixa:</strong> Ao fechar 100%, leia <span class="tag-cmd cmd-start">INICIAR</span>.</div>
           </div>
         </div>
       </div>
@@ -589,8 +583,8 @@
 
     <div class="panel lista-panel">
       <div class="lista-header">
-        <h3>Peças Escaneadas (Embalagem Atual)</h3>
-        <span style="font-size: 11px; color: var(--muted); font-weight: 600;" id="subtituloLista">Embalagem 1</span>
+        <h3>Peças Escaneadas</h3>
+        <span style="font-size: 11px; color: var(--muted); font-weight: 600;" id="subtituloLista">Embalagem Nº 1</span>
       </div>
       <div class="lista-scroll" id="listaProdutos"></div>
     </div>
@@ -934,7 +928,7 @@
       if (ehCracha) {
         if (operadorAtual) {
           tocarSom("erro");
-          atualizarStatusLeitor(`BLOQUEADO! Operador ${operadorAtual} já está logado. Clique em "Trocar Operador" primeiro.`, "erro");
+          atualizarStatusLeitor(`BLOQUEADO! Operador ${operadorAtual} já está logado. Clique em "Trocar Operador".`, "erro");
           return;
         }
 
@@ -942,7 +936,7 @@
         localStorage.setItem("cc4_operador", operadorAtual);
         leitorAtivo = true;
         tocarSom("cmd");
-        atualizarStatusLeitor(`Bem-vindo(a), ${formatarOperadorExibicao(operadorAtual)}! Pode iniciar a contagem.`, "");
+        atualizarStatusLeitor(`Bem-vindo(a), ${formatarOperadorExibicao(operadorAtual)}!`, "");
         await atualizarTela();
         return;
       }
@@ -973,7 +967,7 @@
 
         if (qtdAtual < cfg.meta) {
           tocarSom("erro");
-          atualizarStatusLeitor(`BLOQUEADO! Complete a embalagem atual (${qtdAtual}/${cfg.meta}) antes de iniciar outra.`, "erro");
+          atualizarStatusLeitor(`BLOQUEADO! Complete a embalagem (${qtdAtual}/${cfg.meta}) antes de abrir outra.`, "erro");
           return;
         }
 
@@ -1008,7 +1002,7 @@
       const qtdNaEmbalagem = todas.filter(i => i.op === cfg.op && Number(i.embalagem) === cfg.embalagem).length;
       if (qtdNaEmbalagem >= cfg.meta) {
         tocarSom("erro");
-        atualizarStatusLeitor(`EMBALAGEM ${cfg.embalagem} COMPLETA (${cfg.meta}/${cfg.meta})! Leia INICIAR para abrir a próxima.`, "pausado");
+        atualizarStatusLeitor(`EMBALAGEM ${cfg.embalagem} COMPLETA (${cfg.meta}/${cfg.meta})! Leia INICIAR.`, "pausado");
         return;
       }
 
@@ -1031,7 +1025,7 @@
       tocarSom("ok");
 
       if (qtdNaEmbalagem + 1 === cfg.meta) {
-        atualizarStatusLeitor(`EMBALAGEM Nº ${cfg.embalagem} CONCLUÍDA (${cfg.meta}/${cfg.meta})! Leia INICIAR para nova caixa.`, "pausado");
+        atualizarStatusLeitor(`EMBALAGEM Nº ${cfg.embalagem} CONCLUÍDA (${cfg.meta}/${cfg.meta})! Leia INICIAR.`, "pausado");
       } else {
         atualizarStatusLeitor(`Peça registrada: ${codigoRaw}`, "");
       }
