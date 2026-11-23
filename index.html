@@ -124,9 +124,8 @@
       font-weight: 700;
       cursor: pointer;
     }
-    .btn-admin:hover { background: #e2e8f0; }
 
-    /* 2. Painel Central: Contagem em Destaque + Informações */
+    /* 2. Painel Central */
     .main-grid {
       display: grid;
       grid-template-columns: 1.25fr 1fr;
@@ -148,12 +147,10 @@
       justify-content: center;
     }
 
-    /* Card de Contagem com Alto Destaque */
     .contagem-hero {
       background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
       border: 2px solid #93c5fd;
       text-align: center;
-      position: relative;
     }
 
     .contagem-label {
@@ -208,7 +205,6 @@
     }
     .progress-fill.completa { background: var(--green); }
 
-    /* Card de Informações */
     .info-box {
       display: flex;
       flex-direction: column;
@@ -241,7 +237,7 @@
     }
     .op-deslogado { color: var(--amber) !important; }
 
-    /* 3. Área Inferior (Instruções Aprimoradas + Lista de Peças) */
+    /* 3. Área Inferior */
     .bottom-grid {
       display: grid;
       grid-template-columns: 1fr 1.15fr;
@@ -333,7 +329,6 @@
       color: var(--red);
     }
 
-    /* Lista Interna Rolável */
     .lista-panel { justify-content: flex-start; min-height: 0; overflow: hidden; }
     .lista-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-shrink: 0; }
     .lista-header h3 { margin: 0; font-size: 13px; color: var(--text); font-weight: 800; }
@@ -372,16 +367,17 @@
       font-weight: 700;
       cursor: pointer;
     }
+    button.act.cam { background: var(--green); }
     button.act.sec { background: var(--card); border: 1px solid var(--border); color: var(--text); }
     button.act.test { background: #4f46e5; }
     button.act.warn { background: #d97706; }
 
-    /* Modal Administrador */
+    /* Modais (Admin e Câmera) */
     .modal-backdrop {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.65);
+      background: rgba(15, 23, 42, 0.72);
       backdrop-filter: blur(2px);
       z-index: 50;
       align-items: center;
@@ -401,7 +397,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25);
     }
     .modal-card h2 { margin: 0; font-size: 17px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; }
     .form-row { display: flex; flex-direction: column; gap: 4px; }
@@ -424,6 +420,39 @@
       cursor: pointer;
       font-weight: 700;
       font-size: 11px;
+    }
+
+    /* Visor da Câmera */
+    .camera-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: #0f172a;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    #videoCamera {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .camera-reticle {
+      position: absolute;
+      inset: 18%;
+      border: 3px solid #10b981;
+      border-radius: 12px;
+      box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.45);
+      pointer-events: none;
+    }
+    .camera-feedback {
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      background: var(--card-subtle);
+      border: 1px solid var(--border);
     }
   </style>
 </head>
@@ -509,9 +538,10 @@
     </div>
   </div>
 
-  <!-- 4. Rodapé Operacional + Simulador de Testes -->
+  <!-- 4. Rodapé Operacional + Câmera + Simulador -->
   <div class="footer-bar">
     <div class="btn-group">
+      <button class="act cam" onclick="abrirCameraQR()">📷 Ler QR (Câmera)</button>
       <button class="act" id="btnSync" onclick="sincronizarLote()">Sincronizar Agora</button>
       <button class="act sec" onclick="encerrarSessaoOperador()">Trocar Operador</button>
     </div>
@@ -521,6 +551,27 @@
       <button class="act test" onclick="simularPeca()">Testar Peça</button>
       <button class="act sec" onclick="processarLeitura('INICIAR')">QR INICIAR</button>
       <button class="act warn" onclick="processarLeitura('PAUSAR')">QR PAUSAR</button>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL LEITOR DE QR CODE VIA CÂMERA         -->
+  <!-- ========================================== -->
+  <div class="modal-backdrop" id="modalCamera">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>Leitor QR pela Câmera</h2>
+        <button class="btn-admin" onclick="fecharCameraQR()">✕ Fechar</button>
+      </div>
+
+      <div class="camera-wrapper">
+        <video id="videoCamera" autoplay playsinline muted></video>
+        <div class="camera-reticle"></div>
+      </div>
+
+      <div class="camera-feedback" id="cameraFeedback">
+        Aponte a câmera para o QR Code (Crachá, Peça, INICIAR ou PAUSAR)
+      </div>
     </div>
   </div>
 
@@ -622,6 +673,12 @@
     let ultimoCodigo = "";
     let ultimoTimestamp = 0;
 
+    // Variáveis da Câmera
+    let streamCamera = null;
+    let loopCameraAtivo = false;
+    let ultimoCodigoCamera = "";
+    let ultimoTempoCamera = 0;
+
     // ==========================================
     // ÁUDIO SINTÉTICO (WEB AUDIO API)
     // ==========================================
@@ -652,6 +709,68 @@
         osc.start();
         osc.stop(audioCtx.currentTime + 0.35);
       }
+    }
+
+    // ==========================================
+    // LEITOR QR NATIVO VIA CÂMERA (OFFLINE)
+    // ==========================================
+    async function abrirCameraQR() {
+      if (!("BarcodeDetector" in window)) {
+        alert("Este navegador não suporta leitura nativa de QR Code. Abra o aplicativo pelo Google Chrome no Android.");
+        return;
+      }
+
+      try {
+        streamCamera = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" } },
+          audio: false
+        });
+
+        const video = document.getElementById("videoCamera");
+        video.srcObject = streamCamera;
+        await video.play();
+
+        document.getElementById("cameraFeedback").textContent = "Aponte para o QR Code...";
+        document.getElementById("modalCamera").classList.add("open");
+        loopCameraAtivo = true;
+
+        const detector = new BarcodeDetector({ formats: ["qr_code"] });
+
+        const escanearFrame = async () => {
+          if (!loopCameraAtivo) return;
+          if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            try {
+              const codigos = await detector.detect(video);
+              if (codigos.length > 0) {
+                const valor = codigos[0].rawValue.trim();
+                const agora = Date.now();
+                // Evita ler o mesmo QR Code repetidamente enquanto a câmera está parada nele
+                if (valor && (valor !== ultimoCodigoCamera || (agora - ultimoTempoCamera) > 2200)) {
+                  ultimoCodigoCamera = valor;
+                  ultimoTempoCamera = agora;
+                  await processarLeitura(valor);
+                  document.getElementById("cameraFeedback").textContent =
+                    document.getElementById("statusLeitor").textContent;
+                }
+              }
+            } catch (e) {}
+          }
+          if (loopCameraAtivo) requestAnimationFrame(escanearFrame);
+        };
+
+        requestAnimationFrame(escanearFrame);
+      } catch (err) {
+        alert("Não foi possível acessar a câmera. Verifique se a permissão de câmera está liberada nas configurações do Chrome.");
+      }
+    }
+
+    function fecharCameraQR() {
+      loopCameraAtivo = false;
+      if (streamCamera) {
+        streamCamera.getTracks().forEach(track => track.stop());
+        streamCamera = null;
+      }
+      document.getElementById("modalCamera").classList.remove("open");
     }
 
     // ==========================================
@@ -728,11 +847,11 @@
     }
 
     // ==========================================
-    // CAPTURA GLOBAL DO LEITOR QR (SEM INPUT NA TELA)
+    // CAPTURA GLOBAL DO LEITOR FÍSICO USB
     // ==========================================
     document.addEventListener("keydown", async (e) => {
-      const modalAberto = document.getElementById("modalAdmin").classList.contains("open");
-      if (modalAberto) return;
+      const modalAdminAberto = document.getElementById("modalAdmin").classList.contains("open");
+      if (modalAdminAberto) return;
 
       if (e.key === "Enter") {
         if (bufferScanner.trim().length > 0) {
@@ -758,7 +877,6 @@
       // 1. Leitura de CRACHÁ (apenas números, ex: 31618)
       const ehCracha = /^\d{3,10}$/.test(codigoRaw);
       if (ehCracha) {
-        // BLOQUEIO: Se já existe operador logado, impede novo login direto
         if (operadorAtual) {
           tocarSom("erro");
           atualizarStatusLeitor(`BLOQUEADO! Operador ${operadorAtual} já está logado. Clique em "Trocar Operador" primeiro.`, "erro");
@@ -774,14 +892,14 @@
         return;
       }
 
-      // 2. Exige operador logado antes de qualquer outra leitura
+      // 2. Exige operador logado
       if (!operadorAtual) {
         tocarSom("erro");
         atualizarStatusLeitor("BLOQUEADO! Leia primeiro o QR Code do seu CRACHÁ.", "erro");
         return;
       }
 
-      // 3. Comando QR: PAUSAR (aceita STOP por compatibilidade)
+      // 3. Comando QR: PAUSAR / STOP
       if (cmd === "PAUSAR" || cmd === "STOP") {
         leitorAtivo = false;
         tocarSom("cmd");
@@ -789,7 +907,7 @@
         return;
       }
 
-      // 4. Comando QR: INICIAR (aceita START por compatibilidade)
+      // 4. Comando QR: INICIAR / START
       if (cmd === "INICIAR" || cmd === "START") {
         if (!leitorAtivo) {
           leitorAtivo = true;
@@ -822,7 +940,7 @@
         return;
       }
 
-      // 6. Validação de peça (evita leitura dupla rápida e código repetido)
+      // 6. Validação de peça
       const agora = Date.now();
       if (codigoRaw === ultimoCodigo && (agora - ultimoTimestamp) < 1200) {
         tocarSom("erro");
@@ -865,7 +983,7 @@
       if (qtdNaEmbalagem + 1 === cfg.meta) {
         atualizarStatusLeitor(`EMBALAGEM Nº ${cfg.embalagem} CONCLUÍDA (${cfg.meta}/${cfg.meta})! Leia INICIAR para nova caixa.`, "pausado");
       } else {
-        atualizarStatusLeitor("Leitor ativo — escaneie as peças", "");
+        atualizarStatusLeitor(`Peça registrada: ${codigoRaw}`, "");
       }
 
       await atualizarTela();
@@ -1075,7 +1193,6 @@
       document.getElementById("badgeFila").textContent = `Fila: ${pendentesCount}`;
       document.getElementById("totalGeralTurno").textContent = `${todas.length} peças`;
 
-      // Atualiza barra de progresso
       const pct = Math.min(100, Math.round((qtdAtual / cfg.meta) * 100));
       const barra = document.getElementById("barraProgresso");
       barra.style.width = `${pct}%`;
