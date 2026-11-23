@@ -27,7 +27,7 @@
       --amber-border: #fcd34d;
       --blue: #2563eb;
       --blue-bg: #eff6ff;
-      --shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+      --shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
     }
 
     * {
@@ -35,7 +35,6 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    /* Encaixe absoluto na tela do aparelho sem rolagem externa */
     html, body {
       margin: 0;
       padding: 0;
@@ -49,8 +48,8 @@
     body {
       display: flex;
       flex-direction: column;
-      padding: clamp(4px, 1.1vh, 12px);
-      gap: clamp(4px, 1vh, 10px);
+      padding: clamp(4px, 0.9vh, 12px);
+      gap: clamp(4px, 0.8vh, 10px);
     }
 
     /* 1. Cabeçalho Superior */
@@ -59,11 +58,11 @@
       justify-content: space-between;
       align-items: center;
       background: var(--card);
-      padding: clamp(4px, 0.9vh, 8px) clamp(8px, 1.4vw, 14px);
+      padding: clamp(3px, 0.7vh, 8px) clamp(8px, 1.2vw, 14px);
       border-radius: 10px;
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
-      gap: 8px;
+      gap: 6px;
       flex-shrink: 0;
     }
 
@@ -76,7 +75,7 @@
     }
 
     .brand-logo {
-      height: clamp(20px, 3.6vh, 36px);
+      height: clamp(18px, 3.2vh, 34px);
       width: auto;
       object-fit: contain;
       display: block;
@@ -85,11 +84,11 @@
 
     .op-info {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(11px, 1.6vw, 15px);
+      font-size: clamp(10px, 1.5vw, 14px);
       font-weight: 800;
       background: var(--card-subtle);
       color: var(--text);
-      padding: clamp(3px, 0.6vh, 6px) 10px;
+      padding: clamp(2px, 0.5vh, 5px) 8px;
       border-radius: 6px;
       border: 1px solid var(--border);
       white-space: nowrap;
@@ -100,14 +99,14 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       flex-shrink: 0;
     }
 
     .badge {
-      padding: clamp(3px, 0.5vh, 5px) 9px;
+      padding: clamp(2px, 0.4vh, 4px) 8px;
       border-radius: 20px;
-      font-size: clamp(10px, 1.4vh, 11px);
+      font-size: clamp(9px, 1.3vh, 11px);
       font-weight: 800;
       white-space: nowrap;
     }
@@ -119,9 +118,9 @@
       background: var(--card-subtle);
       color: var(--text);
       border: 1px solid var(--border);
-      padding: clamp(4px, 0.6vh, 6px) 10px;
-      border-radius: 8px;
-      font-size: clamp(11px, 1.5vh, 12px);
+      padding: clamp(3px, 0.5vh, 5px) 8px;
+      border-radius: 7px;
+      font-size: clamp(10px, 1.4vh, 12px);
       font-weight: 700;
       cursor: pointer;
     }
@@ -129,19 +128,16 @@
     /* 2. Painel Central (Contagem + Dados do Posto) */
     .main-grid {
       display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: clamp(4px, 1vh, 10px);
+      grid-template-columns: 1.15fr 1fr;
+      gap: clamp(4px, 0.8vh, 10px);
       flex-shrink: 0;
-    }
-    @media (max-width: 520px) {
-      .main-grid { grid-template-columns: 1fr; }
     }
 
     .panel {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: clamp(6px, 1.2vh, 14px) clamp(8px, 1.4vw, 14px);
+      border-radius: 10px;
+      padding: clamp(5px, 1vh, 14px) clamp(8px, 1.2vw, 14px);
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
@@ -158,9 +154,9 @@
 
     .contagem-label {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(10px, 1.5vh, 13px);
+      font-size: clamp(9px, 1.3vh, 13px);
       text-transform: uppercase;
-      letter-spacing: 0.7px;
+      letter-spacing: 0.6px;
       color: var(--blue);
       font-weight: 800;
     }
@@ -170,29 +166,29 @@
       align-items: baseline;
       justify-content: center;
       gap: 4px;
-      margin: clamp(1px, 0.4vh, 4px) 0;
+      margin: 1px 0;
     }
 
     .contagem-numero {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(30px, 7.8vh, 78px);
+      font-size: clamp(26px, 7vh, 76px);
       font-weight: 900;
-      line-height: 0.92;
+      line-height: 0.9;
       color: var(--text);
-      letter-spacing: -1.5px;
+      letter-spacing: -1px;
     }
 
     .contagem-meta {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(15px, 3vh, 28px);
+      font-size: clamp(14px, 2.8vh, 26px);
       font-weight: 800;
       color: var(--muted);
     }
 
     .progress-track {
       width: 100%;
-      max-width: 280px;
-      height: clamp(6px, 1.1vh, 10px);
+      max-width: 260px;
+      height: clamp(5px, 0.9vh, 9px);
       background: #dbeafe;
       border-radius: 99px;
       margin: 2px auto 0;
@@ -212,13 +208,13 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: clamp(3px, 0.6vh, 6px);
+      gap: clamp(2px, 0.5vh, 5px);
     }
     .info-box h3 {
       margin: 0;
-      font-size: clamp(10px, 1.4vh, 11px);
+      font-size: clamp(9px, 1.2vh, 11px);
       text-transform: uppercase;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.5px;
       color: var(--muted);
       font-weight: 800;
     }
@@ -228,9 +224,9 @@
       align-items: center;
       background: var(--card-subtle);
       border: 1px solid #e2e8f0;
-      padding: clamp(3px, 0.7vh, 6px) 8px;
+      padding: clamp(2px, 0.5vh, 5px) 8px;
       border-radius: 6px;
-      font-size: clamp(11px, 1.6vh, 13px);
+      font-size: clamp(10px, 1.45vh, 13px);
       font-weight: 700;
       gap: 6px;
     }
@@ -244,31 +240,33 @@
     }
     .op-deslogado { color: var(--amber) !important; }
 
-    /* 3. Área Inferior (absorve exatamente o espaço restante da tela) */
+    /* Em telas bem baixas (celular deitado), esconde o subtítulo "Dados do Posto" para ganhar altura */
+    @media (max-height: 440px) {
+      .info-box h3 { display: none; }
+    }
+
+    /* 3. Área Inferior (absorve o espaço restante entre o topo e os botões) */
     .bottom-grid {
       display: grid;
       grid-template-columns: 1fr 1.15fr;
-      gap: clamp(4px, 1vh, 10px);
-      flex: 1;
+      gap: clamp(4px, 0.8vh, 10px);
+      flex: 1 1 auto;
       min-height: 0;
       overflow: hidden;
-    }
-    @media (max-width: 520px) {
-      .bottom-grid { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
     }
 
     .instrucoes-panel {
       justify-content: space-between;
-      gap: clamp(4px, 0.8vh, 8px);
+      gap: clamp(3px, 0.6vh, 8px);
       overflow: hidden;
     }
 
     .instrucoes-titulo {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(10px, 1.5vh, 12px);
+      font-size: clamp(9px, 1.3vh, 12px);
       font-weight: 800;
       color: var(--text);
-      margin: 0 0 clamp(3px, 0.6vh, 6px) 0;
+      margin: 0 0 3px 0;
       text-transform: uppercase;
       letter-spacing: 0.4px;
     }
@@ -276,39 +274,40 @@
     .steps-list {
       display: flex;
       flex-direction: column;
-      gap: clamp(3px, 0.6vh, 6px);
+      gap: clamp(2px, 0.5vh, 6px);
     }
 
-    /* Em telas baixas (celular deitado), coloca as instruções em grade 2x2 */
-    @media (max-height: 520px) and (min-width: 521px) {
+    /* Grade 2x2 nas telas deitadas para caber sem apertar o status */
+    @media (max-height: 550px) and (min-width: 480px) {
       .steps-list {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 4px;
+        gap: 3px;
       }
+      .instrucoes-titulo { display: none; }
     }
 
     .step-item {
       display: flex;
-      align-items: flex-start;
-      gap: 6px;
+      align-items: center;
+      gap: 5px;
       background: var(--card-subtle);
       border: 1px solid #e2e8f0;
-      padding: clamp(3px, 0.7vh, 6px) 7px;
+      padding: clamp(2px, 0.5vh, 6px) 6px;
       border-radius: 6px;
-      font-size: clamp(10px, 1.5vh, 12px);
+      font-size: clamp(9.5px, 1.4vh, 12px);
       color: var(--muted);
-      line-height: 1.25;
+      line-height: 1.2;
     }
 
     .step-num {
-      width: clamp(15px, 2.2vh, 19px);
-      height: clamp(15px, 2.2vh, 19px);
+      width: clamp(14px, 2vh, 18px);
+      height: clamp(14px, 2vh, 18px);
       border-radius: 50%;
       background: var(--blue-bg);
       color: var(--blue);
       font-weight: 800;
-      font-size: 10px;
+      font-size: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -318,22 +317,22 @@
     .step-item strong { color: var(--text); }
 
     .tag-cmd {
-      padding: 0 4px;
+      padding: 0 3px;
       border-radius: 3px;
       font-weight: 800;
-      font-size: 9px;
+      font-size: 8.5px;
       display: inline-block;
     }
     .cmd-start { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
     .cmd-stop { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
 
     .scanner-status {
-      padding: clamp(5px, 1vh, 10px) 8px;
-      border-radius: 8px;
+      padding: clamp(4px, 0.8vh, 10px) 8px;
+      border-radius: 7px;
       font-weight: 800;
-      font-size: clamp(11px, 1.6vh, 13px);
+      font-size: clamp(10px, 1.5vh, 13px);
       text-align: center;
-      border: 2px solid var(--green-border);
+      border: 1.5px solid var(--green-border);
       background: var(--green-bg);
       color: var(--green);
       flex-shrink: 0;
@@ -361,17 +360,17 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
       flex-shrink: 0;
     }
-    .lista-header h3 { margin: 0; font-size: clamp(11px, 1.6vh, 13px); color: var(--text); font-weight: 800; }
+    .lista-header h3 { margin: 0; font-size: clamp(10px, 1.45vh, 13px); color: var(--text); font-weight: 800; }
     .lista-scroll {
-      flex: 1;
+      flex: 1 1 auto;
       min-height: 0;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
       padding-right: 2px;
     }
     .item-bip {
@@ -380,40 +379,40 @@
       align-items: center;
       background: var(--card-subtle);
       border: 1px solid #e2e8f0;
-      padding: clamp(4px, 0.7vh, 6px) 8px;
+      padding: clamp(3px, 0.5vh, 6px) 8px;
       border-radius: 6px;
       font-size: 11px;
       flex-shrink: 0;
     }
-    .item-bip strong { color: var(--text); font-size: clamp(11px, 1.6vh, 13px); }
-    .item-meta { color: var(--muted); font-size: 10px; }
+    .item-bip strong { color: var(--text); font-size: clamp(10px, 1.45vh, 12.5px); }
+    .item-meta { color: var(--muted); font-size: 9.5px; }
 
-    /* 4. Barra de Ações Fixa no Rodapé */
+    /* 4. Barra de Ações Sempre Visível no Rodapé */
     .footer-bar {
       display: flex;
-      gap: 6px;
+      gap: 5px;
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
       background: var(--card);
       border: 1px solid var(--border);
-      padding: clamp(4px, 0.8vh, 8px) 10px;
+      padding: clamp(4px, 0.7vh, 8px) 8px;
       border-radius: 10px;
       box-shadow: var(--shadow);
       overflow-x: auto;
     }
     .btn-group {
       display: flex;
-      gap: 5px;
+      gap: 4px;
       flex-shrink: 0;
     }
     button.act {
       background: var(--blue);
       color: #ffffff;
       border: none;
-      padding: clamp(5px, 0.9vh, 8px) clamp(8px, 1.1vw, 12px);
-      border-radius: 7px;
-      font-size: clamp(10px, 1.5vh, 12px);
+      padding: clamp(4px, 0.8vh, 8px) clamp(7px, 1vw, 11px);
+      border-radius: 6px;
+      font-size: clamp(9.5px, 1.4vh, 12px);
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
@@ -440,7 +439,7 @@
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 16px;
+      padding: 14px;
       width: 100%;
       max-width: 500px;
       max-height: 92dvh;
@@ -478,7 +477,7 @@
       position: relative;
       width: 100%;
       aspect-ratio: 4 / 3;
-      max-height: 50dvh;
+      max-height: 48dvh;
       background: #0f172a;
       border-radius: 10px;
       overflow: hidden;
@@ -561,19 +560,19 @@
         <div class="steps-list">
           <div class="step-item">
             <div class="step-num">1</div>
-            <div><strong>Entrar:</strong> Leia o QR do seu <strong>Crachá</strong>.</div>
+            <div><strong>Entrar:</strong> Leia o QR do <strong>Crachá</strong>.</div>
           </div>
           <div class="step-item">
             <div class="step-num">2</div>
-            <div><strong>Contar:</strong> Bipe o QR de cada peça da caixa.</div>
+            <div><strong>Contar:</strong> Bipe o QR da peça.</div>
           </div>
           <div class="step-item">
             <div class="step-num">3</div>
-            <div><strong>Pausar:</strong> Leia <span class="tag-cmd cmd-stop">PAUSAR</span> ou <span class="tag-cmd cmd-start">INICIAR</span>.</div>
+            <div><strong>Pausar:</strong> <span class="tag-cmd cmd-stop">PAUSAR</span> / <span class="tag-cmd cmd-start">INICIAR</span>.</div>
           </div>
           <div class="step-item">
             <div class="step-num">4</div>
-            <div><strong>Nova Caixa:</strong> Ao fechar 100%, leia <span class="tag-cmd cmd-start">INICIAR</span>.</div>
+            <div><strong>Nova Caixa:</strong> Em 100%, <span class="tag-cmd cmd-start">INICIAR</span>.</div>
           </div>
         </div>
       </div>
@@ -584,7 +583,7 @@
     <div class="panel lista-panel">
       <div class="lista-header">
         <h3>Peças Escaneadas</h3>
-        <span style="font-size: 11px; color: var(--muted); font-weight: 600;" id="subtituloLista">Embalagem Nº 1</span>
+        <span style="font-size: 10px; color: var(--muted); font-weight: 700;" id="subtituloLista">Embalagem Nº 1</span>
       </div>
       <div class="lista-scroll" id="listaProdutos"></div>
     </div>
@@ -594,7 +593,7 @@
   <div class="footer-bar">
     <div class="btn-group">
       <button class="act cam" onclick="abrirCameraQR()">📷 Ler QR (Câmera)</button>
-      <button class="act" id="btnSync" onclick="sincronizarLote()">Sincronizar Agora</button>
+      <button class="act" id="btnSync" onclick="sincronizarLote()">Sincronizar</button>
       <button class="act sec" onclick="encerrarSessaoOperador()">Trocar Operador</button>
     </div>
 
@@ -1200,7 +1199,7 @@
         console.warn("Aguardando conexão estável:", err);
       } finally {
         sincronizando = false;
-        btn.textContent = "Sincronizar Agora";
+        btn.textContent = "Sincronizar";
       }
     }
 
